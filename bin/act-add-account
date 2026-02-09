@@ -1,0 +1,41 @@
+#!/bin/bash
+
+. $ACTBASE/bin/act_utils.sh
+
+# 'accounts' table: Definitions to provide the requiered fields, the date format and if the bank is reporting the spending as a positif number (most are reporting spending with negative numbers which is the convention used for act).
+# 'transactions' table: The transactions for all accounts. 
+
+
+if [ $# -ne 7 ];then
+  echo "Usage: $0 AccountName type fileNamePattern pattern(\"\"?) Id_pos(-1?),libel_pos,date_pos,amount_pos date_format reverse(1|-1)"
+  echo "   type = checking|credit|investment"
+  echo "   pattern = Empty most of the time except when the bank web site export different account with the same file name, then a string inside the CSV is used to map the CSV to the account. The pattern is either a column header or an account id inside the file."
+  echo "   pos = Position starting a 0 (aka the number of commas before the field)"
+  echo "   date_format = Unix date notation. Example: %Y-%m-%d"
+  echo "   reverse = -1 if the CVS spending amount are positif."
+  exit 3
+fi
+
+# Accounts master table:
+if [ $(isTableExist accounts) -eq 0 ];then
+   echo "$(date) WARN $0: The accounts table is missing. Creating it..." | tee -a $ACTBASE/log/act.log
+   echo mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p***** -e "CREATE TABLE accounts ( id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(100) NOT NULL UNIQUE, type varchar(50) NOT NULL DEFAULT 'checking', file varchar(255), pattern varchar(255), field_separator char(5), transaction_id_pos int, libel_pos int, operation_pos int, amount_pos int, date_format varchar(50), reverse tinyint)" | tee -a $ACTBASE/log/act.log
+   mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e "CREATE TABLE accounts ( id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(100) NOT NULL UNIQUE, type varchar(50) NOT NULL DEFAULT 'checking', file varchar(255), pattern varchar(255), field_separator char(5), transaction_id_pos int, libel_pos int, operation_pos int, amount_pos int, date_format varchar(50), reverse tinyint)"
+fi
+
+# Transactions table: 
+if [ $(isTableExist transactions) -eq 0 ];then
+	echo "$(date) INFO $0: mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p***** -e \"CREATE TABLE transactions ( id INT AUTO_INCREMENT, account_id INT NOT NULL, libel VARCHAR(250), operation DATETIME, amount DECIMAL(12,2), category_id INT, PRIMARY KEY (id, account_id) FOREIGN KEY (account_id), REFERENCES accounts(id))\"" | tee -a $ACTBASE/log/act.log
+	mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e "CREATE TABLE transactions ( id INT AUTO_INCREMENT, account_id INT NOT NULL, libel VARCHAR(250), operation DATETIME, amount DECIMAL(12,2), category_id INT, PRIMARY KEY (id, account_id) FOREIGN KEY (account_id), REFERENCES accounts(id))"
+fi
+
+
+echo "$(date) INFO $0 executing: mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p****** -e \"insert into accounts values (0,\"${1// /}\",\"$2\",\"${3%%.csv}*.csv\",\"$4\",\",\",${5##,*}, \"$6\", \"$7\")\"" | tee -a $ACTBASE/log/act.log
+mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e "insert into accounts values (0,\"${1// /}\",\"$2\",\"${3%%.csv}*.csv\",\"$4\",\",\",${5##,*},\"$6\",\"$7\")"
+
+# Working directory for that account (Refer to act-process-csv)
+mkdir -p $ACTDATA/processed/${1// /}
+
+echo "$(date) INFO $0: $1 definition added" | tee -a $ACTBASE/log/act.log
+mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e "select * from accounts"
+

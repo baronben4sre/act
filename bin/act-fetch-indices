@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+
+import yfinance as yf
+import mysql.connector
+import os
+from datetime import datetime
+
+# ----------------------------------------------------------------------
+# Configuration
+# ----------------------------------------------------------------------
+
+# Define the indices to fetch
+INDICES = {
+    "S&P500": "^GSPC",
+    "DowJones": "^DJI",
+    "Nasdaq": "^IXIC"
+}
+
+# Define date range (you can modify as needed)
+START_DATE = "2011-01-01"
+#START_DATE = "2025-07-01"
+END_DATE = datetime.today().strftime("%Y-%m-%d")
+
+# ----------------------------------------------------------------------
+# Database setup
+# ----------------------------------------------------------------------
+conn = mysql.connector.connect(
+    host = os.environ.get("MYSQL_HOST"),
+    user = os.environ.get("MYSQL_USER"),
+    password = os.environ.get("MYSQL_PASSWORD", ""),
+    database = os.environ.get("MYSQL_DATABASE")
+)
+cur = conn.cursor()
+
+cur.execute(f"""
+CREATE TABLE IF NOT EXISTS {TABLE_NAME} (
+    id INTEGER PRIMARY KEY,
+    index_name varchar(100) NOT NULL,
+    symbol varchar(20) NOT NULL,
+    date DATE NOT NULL,
+    open REAL,
+    high REAL,
+    low REAL,
+    close REAL,
+    adj_close REAL,
+    volume INTEGER,
+    UNIQUE(symbol, date)
+)
+""")
+conn.commit()
+
+# ----------------------------------------------------------------------
+# Fetch data from Yahoo Finance and insert into DB
+# ----------------------------------------------------------------------
+for name, symbol in INDICES.items():
+    print(f"Fetching data for {name} ({symbol}) from {START_DATE} to {END_DATE} and storing them int {TABLE_NAME}...")
+    ticker = yf.Ticker(symbol)
+    data = ticker.history(start=START_DATE, end=END_DATE)
+
+    # Iterate over rows
+    for date, row in data.iterrows():
+        cur.execute(f"""
+            INSERT OR IGNORE INTO {TABLE_NAME}
+            (index_name, symbol, date, open, high, low, close, adj_close, volume)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            name,
+            symbol,
+            date.strftime("%Y-%m-%d"),
+            row["Open"],
+            row["High"],
+            row["Low"],
+            row["Close"],
+            row["Adj Close"],
+            int(row["Volume"]) if not isinstance(row["Volume"], float) else 0
+        ))
+
+    conn.commit()
+    print(f"Inserted {len(data)} rows for {name}")
+
+conn.close()
+print("\nAll index data successfully stored in database.")
+
+
+

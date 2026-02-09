@@ -1,0 +1,143 @@
+{
+    "dashboard": {
+        "id": null,
+        "uid": null,
+        "title": "Investment Overview",
+        "timezone": "browser",
+        "panels": [
+            {
+                "id": 1,
+                "type": "timeseries",
+                "title": "Investment",
+                "datasource": {
+                    "type": "mysql",
+                    "name": "account"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "format": "time_series",
+                        "rawSql": "\nSELECT\n  category_monthly_totals.month_end AS time,\n  categories.name AS metric,\n  ABS(SUM(category_monthly_totals.total_amount)) AS value\nFROM category_monthly_totals     \nJOIN categories ON categories.id = category_monthly_totals.category_id\nWHERE categories.name = 'Investment'\nGROUP BY time, metric\nORDER BY time\n",
+                        "timeColumn": "time",
+                        "metricColumn": "metric",
+                        "timeColumnType": "datetime",
+                        "datasource": {
+                            "type": "mysql",
+                            "name": "account"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "custom": {
+                            "stacking": {
+                                "category": "A",
+                                "mode": "normal"
+                            },
+                            "fillOpacity": 67,
+                            "gradientMode": "opacity",
+                            "drawStyle": "line"
+                        }
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 24,
+                    "w": 24,
+                    "x": 0,
+                    "y": 0
+                },
+                "options": {
+                    "legend": {
+                        "calcs": [
+                            "lastNotNull",
+                            "min",
+                            "max",
+                            "mean"
+                        ],
+                        "displayMode": "table",
+                        "placement": "bottom",
+                        "showLegend": "true"
+                    }
+                }
+            },
+            {
+                "id": 2,
+                "type": "row",
+                "title": "Investment",
+                "collapsed": true,
+                "gridPos": {
+                    "h": 24,
+                    "w": 24,
+                    "x": 0,
+                    "y": 24
+                },
+                "panels": [
+                    {
+                        "id": 3,
+                        "type": "timeseries",
+                        "title": "Investment - Sub categories",
+                        "datasource": {
+                            "type": "mysql",
+                            "name": "account"
+                        },
+                        "targets": [
+                            {
+                                "refId": "A",
+                                "format": "time_series",
+                                "rawSql": "\nSELECT\n  category_monthly_totals.month_end AS time,\n  c.name AS metric,\n  ABS(SUM(category_monthly_totals.total_amount)) AS value\nFROM category_monthly_totals\nJOIN categories c ON c.id = category_monthly_totals.category_id\nWHERE c.parent_id = 108\nGROUP BY time, metric\nORDER BY time\n",
+                                "timeColumn": "time",
+                                "metricColumn": "metric",
+                                "timeColumnType": "datetime",
+                                "datasource": {
+                                    "type": "mysql",
+                                    "name": "account"
+                                }
+                            }
+                        ],
+                        "fieldConfig": {
+                            "defaults": {
+                                "custom": {
+                                    "stacking": {
+                                        "category": "A",
+                                        "mode": "normal"
+                                    },
+                                    "fillOpacity": 67,
+                                    "gradientMode": "opacity",
+                                    "drawStyle": "line"
+                                }
+                            },
+                            "overrides": []
+                        },
+                        "gridPos": {
+                            "h": 24,
+                            "w": 24,
+                            "x": 0,
+                            "y": 48
+                        },
+                        "options": {
+                            "legend": {
+                                "calcs": [
+                                    "lastNotNull",
+                                    "min",
+                                    "max",
+                                    "mean"
+                                ],
+                                "displayMode": "table",
+                                "placement": "bottom",
+                                "showLegend": "true"
+                            }
+                        }
+                    }
+                ]
+            }
+        ],
+        "schemaVersion": 36,
+        "version": 0,
+        "time": {
+            "from": "now-1y",
+            "to": "now"
+        }
+    },
+    "overwrite": true
+}

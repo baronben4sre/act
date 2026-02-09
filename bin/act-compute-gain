@@ -1,0 +1,106 @@
+#!/usr/bin/env python3
+import logging
+import mysql.connector
+import os
+import sys
+from datetime import datetime, date
+from dateutil.relativedelta import relativedelta
+from calendar import monthrange
+
+# Build a list of date from start_date to end_date using increment function (relativedelta(days=1), relativedelta(months=1), etc.
+def end_month(dt):
+    # Compute last day of the month
+    last_day = monthrange(dt.year, dt.month)[1]
+    return datetime(dt.year, dt.month, last_day, 23, 59, 59)
+
+def to_datetime_end_of_month(value):
+    """
+    Normalize str/date/datetime → datetime set to the
+    end of the month (last day at 23:59:59)
+    """
+    # Convert raw type → datetime
+    if isinstance(value, datetime):
+        base = value
+    elif isinstance(value, date):
+        base = datetime(value.year, value.month, value.day)
+    elif isinstance(value, str):
+        base = datetime.strptime(value, "%Y-%m-%d")
+    else:
+        raise TypeError(f"Unsupported type: {type(value)}")
+
+    return end_month(base)
+
+
+def date_range(start_date, end_date, increment):
+    start = to_datetime_end_of_month(start_date)
+    end   = to_datetime_end_of_month(end_date)
+
+    dates = []
+    current = start
+
+    while current <= end:
+        dates.append(end_month(current.date()))
+        current += increment
+
+    return dates
+
+
+log_file = os.environ.get("ACTLOG")
+logging.basicConfig(
+    filename=log_file + "/act-compute-gain.log",
+    level=logging.DEBUG,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+)
+
+
+# ----------------------------------------------------------------------
+# Database setup
+# ----------------------------------------------------------------------
+conn = mysql.connector.connect(
+    host = os.environ.get("MYSQL_HOST"),
+    user = os.environ.get("MYSQL_USER"),
+    password = os.environ.get("MYSQL_PASSWORD", ""),
+    database = os.environ.get("MYSQL_DATABASE")
+)
+cur = conn.cursor()
+cur.execute("""
+CREATE TABLE IF NOT EXISTS account_gains (
+    account_id INT NOT NULL,
+    gain_date DATE NOT NULL,
+    gain_amount DECIMAL(12,2) NOT NULL,
+    PRIMARY KEY(account_id, gain_date)
+)
+""")
+conn.commit()
+
+cur.execute("""
+select id, name from accounts where type = "Investment";
+""")
+accounts = cur.fetchall()
+
+START_DATE = "First transaction" 
+if len(sys.argv) > 2:
+   START_DATE = sys.argv[1]
+END_DATE = datetime.today().strftime("%Y-%m-%d")
+
+for (id, name) in accounts:
+    print(f"Processing account {name}/{id}")
+    if START_DATE == "First transaction":
+        cur.execute("select operation from transactions order by operation limit 1")
+        start = cur.fetchall()[0][0]
+    else:
+        start = START_DATE
+    
+    for month in date_range(start, END_DATE, relativedelta(months=1)):
+        logging.debug(f"select sum(amount) from transactions where account_id = {id} and libel = 'Capital' and operation < {month} order by operation asc limit 1")
+        cur.execute("select sum(amount) from transactions where account_id = %s and libel = 'Capital' and operation < %s order by operation asc limit 1", (id, month))
+        invested_amount = cur.fetchall()[0][0]
+        if invested_amount:
+            logging.debug(f"select amount, operation from transactions where account_id = {id} and libel = 'balance' and amount != 0 and operation < {month} order by operation desc limit 1")
+            cur.execute("select amount, operation from transactions where account_id = %s and libel = 'balance' and amount != 0 and operation < %s order by operation desc limit 1", (id, month))
+            (value, d) = cur.fetchall()[0]
+            gain = ( value - invested_amount ) * 100 / invested_amount
+            logging.debug(f"{d}/{month}: Gain for act {name}: {gain} = ( {value} - {invested_amount} ) * 100 / {invested_amount}")
+            cur.execute("replace into account_gains value (%s,%s,%s)", (id, d, gain))
+            conn.commit()
+

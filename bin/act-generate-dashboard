@@ -1,0 +1,265 @@
+#!/usr/bin/env python3
+
+import os
+import requests
+import json
+import mysql.connector
+
+# === CONFIG ===
+GRAFANA_URL = "http://grafana:3000"
+API_KEY = os.getenv("GRAFANA_API_KEY")
+DATASOURCE_NAME = "account"
+
+DB_CONFIG = {
+    "host": os.getenv("MYSQL_HOST"),
+    "user": os.getenv("MYSQL_USER"),
+    "password": os.getenv("MYSQL_PASSWORD"),
+    "database": os.getenv("MYSQL_DATABASE")
+}
+
+headers = {
+    "Authorization": f"Bearer {API_KEY}",
+    "Content-Type": "application/json"
+}
+
+# === SQL Queries ===
+top_category_sqls = {}
+top_category_sqls["Spending"] = "SELECT id, name FROM categories WHERE parent_id IS NULL"
+top_category_sqls["Income"] = "SELECT 116 AS id, 'Income' AS name"
+top_category_sqls["Investment"] = "SELECT 108 AS id, 'Investment' AS name"
+
+def subcategory_sql(parent_id):
+    return f"""
+SELECT
+  category_monthly_totals.month_end AS time,
+  c.name AS metric,
+  ABS(SUM(category_monthly_totals.total_amount)) AS value
+FROM category_monthly_totals
+JOIN categories c ON c.id = category_monthly_totals.category_id
+WHERE c.parent_id = {parent_id}
+GROUP BY time, metric
+ORDER BY time
+"""
+
+# Overview dashboards: Spending, Income, Investment...
+sqls = {}
+sqls["Spending"] = """
+SELECT
+  category_monthly_totals.month_end AS time,
+  categories.name AS metric,
+  ABS(SUM(category_monthly_totals.total_amount)) AS value
+FROM category_monthly_totals
+JOIN categories ON categories.id = category_monthly_totals.category_id
+WHERE categories.parent_id IS NULL
+AND categories.name not in ('Investment', 'Income','Transfer')
+GROUP BY time, metric
+ORDER BY time
+"""
+
+sqls["Income"] = """
+SELECT
+  category_monthly_totals.month_end AS time,
+  categories.name AS metric,
+  ABS(SUM(category_monthly_totals.total_amount)) AS value
+FROM category_monthly_totals
+JOIN categories ON categories.id = category_monthly_totals.category_id
+WHERE categories.name = 'Income'
+GROUP BY time, metric
+ORDER BY time
+"""
+
+sqls['Investment']  = """
+SELECT
+  category_monthly_totals.month_end AS time,
+  categories.name AS metric,
+  ABS(SUM(category_monthly_totals.total_amount)) AS value
+FROM category_monthly_totals     
+JOIN categories ON categories.id = category_monthly_totals.category_id
+WHERE categories.name = 'Investment'
+GROUP BY time, metric
+ORDER BY time
+"""
+
+# === Helpers ===
+def sql_target(raw_sql):
+    return {
+        "refId": "A",
+        "format": "time_series",
+        "rawSql": raw_sql,
+        "timeColumn": "time",
+        "metricColumn": "metric",
+        "timeColumnType": "datetime",
+        "datasource": {"type": "mysql", "name": DATASOURCE_NAME}
+    }
+
+def timeseries_panel(panel_id, title, targets, gridPos):
+    return {
+        "id": panel_id,
+        "type": "timeseries",
+        "title": title,
+        "datasource": {"type": "mysql", "name": DATASOURCE_NAME},
+        "targets": targets,
+        "fieldConfig": {
+            "defaults": {
+                "custom": {
+                    "stacking": {
+                       "category": "A",
+                       "mode": "normal"
+                    },
+                    "fillOpacity": 67,
+                    "gradientMode": "opacity",
+                    "drawStyle": "line"
+                }
+            },
+            "overrides": []
+        },
+        "gridPos": gridPos,
+        "options": {
+          "legend": {
+            "calcs": [
+              "lastNotNull",
+              "min",
+              "max",
+              "mean"
+            ],
+            "displayMode": "table",
+            "placement": "bottom",
+            "showLegend": "true"
+          }
+        }
+    } 
+
+def get_top_categories(type):
+    conn = mysql.connector.connect(**DB_CONFIG)
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute(top_category_sqls[type])
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
+
+# === Build dashboard in Grafana ===
+def build_dashboard(type):
+    panels = []
+    pid = 1
+    y_offset = 0
+
+    # Global top categories panel
+    #for p in sqls.keys():
+    panels.append(
+        timeseries_panel(
+            pid, type,
+            [sql_target(sqls[type])],
+            {"h": 24, "w": 24, "x": 0, "y": y_offset}
+        )
+    )
+    pid += 1
+    y_offset += 24
+
+    # One row + stacked chart per top category
+    for category in get_top_categories(type):
+        row_panel = {
+            "id": pid,
+            "type": "row",
+            "title": category["name"],
+            "collapsed": True,
+            "gridPos": {"h": 24, "w": 24, "x": 0, "y": y_offset},
+            "panels": []
+        }
+        pid += 1
+        y_offset += 24
+
+        child_panel = timeseries_panel(
+            pid,
+            f"{category['name']} - Sub categories",
+            [sql_target(subcategory_sql(category["id"]))],
+            {"h": 24, "w": 24, "x": 0, "y": y_offset}
+        )
+        pid += 1
+        y_offset += 24
+
+        row_panel["panels"].append(child_panel)
+        panels.append(row_panel)
+
+    dashboard = {
+        "dashboard": {
+            "id": None,
+            "uid": None,
+            "title": type + " Overview",
+            "timezone": "browser",
+            "panels": panels,
+            "schemaVersion": 36,
+            "version": 0,
+            "time": {
+                "from": "now-1y",
+                "to": "now"
+            } 
+
+        },
+        "overwrite": True
+    }
+    return dashboard
+
+def push_dashboard(dashboard):
+    resp = requests.post(f"{GRAFANA_URL}/api/dashboards/db",
+                         headers=headers,
+                         data=json.dumps(dashboard))
+    if resp.status_code == 200:
+        print("Dashboard created/updated successfully.")
+    else:
+        print(f"Error {resp.status_code}: {resp.text}")
+
+def save_dashboard(dashboard, type):
+    # Save to file for log and debug purpose
+    with open("generated_dashboard_" + type + ".json", "w") as f:
+       f.write(dashboard)
+
+    print(f"Dashboard JSON generated successfully in generated_dashboard_{type}.json.")
+
+def create_datasource(password):
+    data = {
+        "name": "account",
+        "type": "mysql",
+        "access": "proxy",
+        "url": "mariadb:3306",
+        "database": "account",
+        "user": "acct_user",
+        "secureJsonData": {
+            "password": password
+        },
+        "jsonData": {
+            "tlsAuth": False,
+            "tlsSkipVerify": True,
+            "maxOpenConns": 10,
+            "maxIdleConns": 5,
+            "connMaxLifetime": 14400
+        }
+    }
+
+    resp = requests.post(
+        f"{GRAFANA_URL}/api/datasources",
+        headers=headers,
+        json=data,
+        timeout=10
+    )
+
+    if resp.status_code in (200, 201):
+        print("Datasource created successfully.")
+    else:
+        print(f"Error creating datasource: {resp.status_code}: {resp.text}")
+
+def datasource_exists(name):
+    r = requests.get(
+        f"{GRAFANA_URL}/api/datasources/name/{name}",
+        headers=headers
+    )
+    return r.status_code == 200
+
+if __name__ == "__main__":
+    if not datasource_exists("account"):
+        create_datasource(DB_CONFIG["password"])
+
+    for type in 'Spending', 'Income', 'Investment':
+        dash = build_dashboard(type)
+        save_dashboard(json.dumps(dash, indent=4), type)
+        push_dashboard(dash)
+

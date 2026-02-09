@@ -1,0 +1,6 @@
+#!/bin/bash 
+
+$ACTBASE/bin/act-review-monthly 1,9
+$ACTBASE/bin/act-review-balance 1 5
+$ACTBASE/bin/act-review-balance 9 5
+

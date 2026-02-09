@@ -1,0 +1,28 @@
+#!/bin/bash 
+
+# Perform the difference between the amount spent and paid for the last $2 payments.
+# $1 = account_id
+# $2 = [number of payment to be reviewed] (default = 4)
+
+if [ $# -eq 0 ];then
+   echo "Usage: $0 account_id [nb_payment]"
+   echo "Example: $0 1 4"
+   exit 3
+fi
+
+nb_payment="$2"
+if [ -z "$nb_payment" ];then
+   nb_payment=4
+fi
+
+d=$(date +%Y-%m-%d)
+
+for pd in $(mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -bsNe "select date(operation) from transactions where category_id=119 and account_id = $1 order by operation desc limit $nb_payment"); do
+   amount_spent=$(mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -bsNe  "select round(sum(amount)) from transactions where operation > \"$pd\" and operation < \"$d\" and amount <0 and account_id = $1")
+   amount_paid=$(mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -bsNe  "select round(sum(amount)) from transactions where operation > \"$pd\" and operation < \"$d\" and amount >0 and account_id = $1")
+   nb_tran=$(mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -bsNe  "select count(*) from transactions where operation > \"$pd\" and operation < \"$d\" and account_id = $1")
+   total=$(( $total + $amount_paid + $amount_spent ))
+   echo "$(date) INFO $0: $nb_tran transaction between $pd and $d: amount paid - amount spent = $amount_paid $amount_spent = $(( $amount_paid + $amount_spent )) Total = $total" | tee -a $ACTBASE/log/act.log
+   d=$pd
+done
+

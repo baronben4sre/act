@@ -1,0 +1,19 @@
+#!/bin/bash 
+# $1 = [Account name or Id]
+# Find the date of the most recent transaction for account $1. 
+
+act="$1"
+if [ -n "$act" ];then
+    # Assume that act is the name and if not match, use act as id.
+    id=$(mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -sBNe "select id from accounts where name like \"%$act%\"")
+    if [ -z "$id" ];then
+        id=$act
+    fi
+    filter="where account_id = $id"
+    echo -e "Last day for $act:\n$(mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e "select * from transactions $filter order by operation desc limit 1")"
+else
+   for act in $(mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -sBNe "select id from accounts"); do
+      echo -e "Last day for $(mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -sBNe "select name from accounts where id = $act") account:\n$(mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -sBNe "select operation, libel from transactions where account_id = $act order by operation desc limit 1")"
+   done
+
+fi

@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# Adding a row into an account
+
+insert-data() {
+  # $1 = account number
+  # $2 = Amount
+  # $3 = Libel
+  # $4 = date
+  # $5 = Category id
+  # $6 = [Transaction Id] Default: Auto
+
+  if [ -z "$1$2$3$4$5" ];then
+	  echo "Usage $0 act amt libel XXXX-MM-DD cat_id [trans_id]"
+	  return
+  fi
+
+  id=$6
+  if [ -z "$id" ];then
+	  id=0
+  fi
+ 
+  # For cumulative graph, last data is repeated over blank month (Refer to act-investment-fill-forward). 
+  # Deleting the data before inserting the new one.
+  echo "$(date) INFO $0: mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -pXXXXXX -e \"delete from transactions where account_id = $1 and operation > \"$4\" and amount = (select amount from transactions where account_id = $1  and operation like \"$4%\")\"" | tee -a $ACTBASE/log/act.log
+  mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e "delete from transactions where account_id = $1 and operation >= \"$4\" and amount = (select amount from transactions where account_id = $1 and operation like \"$4%\")"
+
+  echo "$(date) INFO $0: mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -pXXXXXX -e \"insert into transactions values ($id,$1,\"$3\",\"$4 00:00:00\",$2,$5)\"" | tee -a $ACTBASE/log/act.log
+  mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e "insert into transactions values ($id,$1,\"$3\",\"$4 00:00:00\",$2,$5)"
+
+  echo "$(date) INFO $0: Last transactions: $(mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e "select * from transactions where account_id = $1 order by operation desc limit 10") | tee -a $ACTBASE/log/act.log
+
+ 
+}
+
+insert-cri-data() {
+   # $1 = amount
+   # $2 = Date
+   # $3 = [libel] Default="Balance"
+   
+   if [ -z "$1" -o -z "$2" ];then
+	   echo "Usage: $0 amount YYYY-MM-DD [libel (Def: 'Balance')]"
+	   return -3
+   fi
+
+   libel="$3"
+   if [ -z "$libel" ];then
+	   libel="Balance"
+   fi
+   insert-data 8 $1 $libel $2 105
+
+}
+
+# Main entry
+if [ "$1" != "include" ]; then
+       action=$(basename $0 |sed -e 's/^act-\(.\)/\l\1/g')
+       if [ -f "$1" ]; then
+	       for h in `cut -f1 $1 | cut -d' ' -f1`; do
+		       ${action%%.sh*} $h "$2" "$3"
+	       done
+       else
+	       ${action%%.sh*} $1 "$2" "$3" "$4" "$5" $6
+       fi
+fi
+
+

@@ -1,0 +1,222 @@
+#!/usr/bin/env python3
+
+from typing import List, Iterable, Tuple
+import logging
+import csv
+from datetime import datetime
+import os
+import re
+import glob
+import fnmatch
+from pathlib import Path
+import pymysql
+import pymysql.constants.CLIENT
+
+
+def is_date(value, fmt=None):
+    fmt = fmt or "%m/%d/%Y" 
+    try:
+        datetime.strptime(value, fmt)
+        return True
+    except ValueError:
+        return False
+
+def process_row(row: List[str]) -> List[str]:
+   fields = getattr(process_row, "idx", ())
+   account = getattr(process_row, "account", "")
+   date_format = getattr(process_row, "date_format", "")
+   reverse = getattr(process_row, "reverse", 1)
+
+   def process_cell(i: int):
+        val = row[i] if i != -1 else 0
+
+        logging.debug(f"Date processing cell {i}/{row[i]}. Entry {val} {fields[3]}")
+ 
+        if i == fields[2]: # Date
+            return datetime.strptime(val, date_format).strftime("%Y-%m-%d")
+
+        if isinstance(val, str) and val.find('$') != -1: # Clean-up '$' sign from the amount or any other field.
+            val = float(val.replace('$','').replace(' ',''))
+
+        if i == fields[3]: # Amount: Some banks will show spending as >0 value and others as <0. Make sure that spending is a negative value.
+           val *= reverse
+           logging.debug(f"Amount {val} processed with {reverse}")
+
+        return val
+ 
+   # Validations
+   if len(fields) < 3 or account == "":
+       logging.error(f"process_row.idx ({fields}) and/or account ({account}) are not set. ABORTING")
+       return None
+   if not is_date(row[fields[2]], date_format) or len(row) == 0:
+       return None
+
+   # By default all transactions are listed as 'Unspecified' (=72).
+   #  Refer to Classify.sh for bulk changes.
+   # Updates should impact calling function as well.
+   row += ('72', account)
+   fields += (len(row) - 2, len(row) -1)
+   logging.debug(f"calling map({process_cell}, {fields}) using {date_format}, {account}, {reverse}")
+   return list(map(process_cell, fields))
+
+def extract_fields(account: str, input_path: str, output_path: str, indices: Iterable[int], date_format: str, reverse: int, delimiter: str = ',', newline: str = '\n') -> int:
+    """
+    Open a CSV, extract three fields by positions given in `indices`, and write a new CSV with those fields.
+    Returns the number of data rows written (excluding header).
+    
+    Parameters
+    - input_path: path to source CSV file
+    - output_path: path for new CSV file to create
+    - indices: iterable with integer indices (0-based & -1 if the field is missing. Note: It will be replaced by 0 (and mysql will generate the ID))
+    - delimiter: CSV field delimiter for both input and output
+    - newline: newline used when writing output (default '\\n')
+    """
+    process_row.idx = tuple(indices)
+    process_row.account = account
+    process_row.reverse = reverse
+    process_row.date_format = date_format
+    logging.debug(f"extract_fields called for {account} to process {input_path} to generate {output_path}")
+    with open(input_path, newline='') as fin, open(output_path, 'w', newline=newline) as fout:
+        reader = csv.reader(fin, delimiter=delimiter)
+        writer = csv.writer(fout, delimiter=delimiter, lineterminator='\n')
+        
+        while not next(reader):
+             pass # Drop the header line and blank lines Todo: File forman validation in act-add-account.sh
+
+        processed_rows = filter(None, map(process_row, reader))
+
+        writer.writerows(processed_rows)
+
+def count_lines(filePath: Path) -> int:
+   with filePath.open() as f:
+      return sum(1 for _ in f)
+
+
+def run_sql(sql_statement: str):
+    if not hasattr(run_sql, "host"):
+        run_sql.host = os.environ.get("MYSQL_HOST")
+        run_sql.user = os.environ.get("MYSQL_USER")
+        run_sql.password = os.environ.get("MYSQL_PASSWORD", "")
+        run_sql.database = os.environ.get("MYSQL_DATABASE")
+
+    # Connect to MySQL
+    conn = pymysql.connect(host=run_sql.host, user=run_sql.user, password=run_sql.password, database=run_sql.database, charset="utf8mb4", local_infile=True, client_flag=pymysql.constants.CLIENT.LOCAL_FILES, autocommit=True)
+    try:
+        with conn.cursor() as cur:
+            logging.debug(f"SQL statement to be run: {sql_statement}")
+            cur.execute(sql_statement)
+            res = cur.fetchall()
+            logging.info(f"Executed {sql_statement} results: {res}")
+    finally:
+        conn.close()
+    return res
+
+def load_and_process_from_db(db_table: str = "accounts") -> int:
+    """
+    Connect to MySQL using environment variables and process CSV files according to rules in the DB.
+
+    Environment variables used:
+    - MYSQL_DATABASE : name of the database
+    - MYSQL_USER : DB user 
+    - MYSQL_PASSWORD : password for the DB user
+    - ACTDATA         : directory (or glob root) containing input files in the 'incoming' sub directory.
+
+    DB table definition:
+      +-----------------+--------------+------+-----+---------+-------+
+      | Field           | Type         | Null | Key | Default | Extra |
+      +-----------------+--------------+------+-----+---------+-------+
+      | account         | varchar(25)  | NO   | PRI | NULL    |       |
+      | file            | varchar(255) | YES  |     | NULL    |       |
+      | pattern         | varchar(255) | YES  |     | NULL    |       |
+      | directory       | varchar(50)  | YES  |     | NULL    |       |
+      | field_separator | char(5)      | YES  |     | NULL    |       |
+      | id_pos          | int(11)      | YES  |     | NULL    |       |
+      | libel_pos       | int(11)      | YES  |     | NULL    |       |
+      | operation_pos   | int(11)      | YES  |     | NULL    |       |
+      | amount_pos      | int(11)      | YES  |     | NULL    |       |
+      +-----------------+--------------+------+-----+---------+-------+
+
+
+    Behavior:
+    - For each rule row, find all files in ACTDATA 
+    - For each candidate file, test whether any line matches pattern (regex)
+    - If it matches, call extract_fields(input_path, output_path, indices_tuple)
+      where output_path is input_path with its suffix replaced by '.2load' and classify both file under ACTDATA/account/.
+    - Load the file into the account if the number of lines matches (2 empty or invalid line are allowed). 
+    - Returns the number of files successfully handed to extract_fields
+
+    """
+    log_file = os.environ.get("ACTLOG")
+    logging.basicConfig(
+    filename=log_file + "/act-process.log",
+    level=logging.DEBUG,
+    format="%(asctime)s [%(levelname)s] %(message)s", 
+    )
+
+    rules = run_sql(f"SELECT * FROM {db_table}")
+    processed_files = 0
+    data = os.environ.get("ACTDATA")
+    data_path = Path(data + "/incoming")
+    for account_id, name, type, file, pattern, field_separator, id_pos, libel_pos, operation_pos, amount_pos, date_format, reverse in rules:
+        candidate_paths = [p for p in map(Path, glob.glob(str(data_path) + '/' + file, recursive=False))]
+        logging.info(f"Processing {name}. Files found: {candidate_paths} with {str(data_path) + '/' + file}")
+        # Precompile content regex (treat empty as match-all)
+        content_re = None
+        if pattern and pattern.strip():
+            content_re = re.compile(pattern)
+
+        for path in candidate_paths:
+            if not path.is_file():
+                logging.info(f"No file found for {name}/{file} ({pattern}) in {data}")
+                continue
+
+            # If there's a content pattern, scan file for a match
+            if content_re is not None:
+                matched = False
+                try:
+                    with path.open("r", encoding="utf-8", errors="ignore") as fh:
+                        for line in fh:
+                            if content_re.search(line):
+                                matched = True
+                                break
+                except Exception:
+                    # If file can't be read, skip it
+                    logging.error(f"Can't read {path}") 
+                    continue
+                if not matched:
+                    logging.info(f"{pattern} not found in {path} ({name})") 
+                    continue
+
+            out_path = Path('/tmp') / path.with_suffix(".2load").name
+            # Don't create the directory. If it's missing, the account was not added through act-add-account (and might have more issues)
+            indices_tuple = (int(id_pos), int(libel_pos), int(operation_pos), int(amount_pos))
+            
+            # Processing...
+            try:
+                extract_fields(account_id, str(path), str(out_path), indices_tuple, date_format, reverse)
+                if count_lines(path) - count_lines(out_path) < 4: #  Some files are starting by two empty lines, then the header... Todo?: Filter empty lines during the file gathering process? 
+                    # Adding the transactions into the DB.
+                    logging.info(f"Running run_sql(load data local infile '{out_path}' IGNORE into table transactions FIELDS TERMINATED BY ',' (id, libel, operation, amount, category_id, account_id))")
+                    # By default do not replace the row to keep of the clasiification. Todo: Count validation to confirm that amount doesn't change.
+                    run_sql(f"load data local infile '{out_path}' IGNORE into table transactions FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' (id, libel, operation, amount, category_id, account_id)")
+                    # To be swap if the new transaction should overload the existing ones:
+                    #   run_sql(f"load data local infile '{out_path}' REPLACE into table transactions FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n'")
+                else: 
+                    logging.error(f"Missing transaction is detected in {out_path} while processing {path}. ABORTING!!!!")
+                    continue
+                processed_files += 1
+                # File processed, no need to do it again.
+                moved_path = path.parent / "../processed" / name / path.name
+                print(f"{path} processed and moved to {moved_path}") 
+                path.rename(moved_path)   
+                    
+            except Exception as e:
+                logging.error(f"{e} for {path}")
+                continue
+    logging.info(f"Number of files processed: {processed_files}")
+    return processed_files
+
+if __name__ == "__main__": 
+   load_and_process_from_db()
+
+

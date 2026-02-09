@@ -1,0 +1,56 @@
+#!/bin/bash
+
+# Before the summarization
+# For investment account, foward-fill any missing months with the last available data (quaterly statement vs monthly view).
+
+# Function to get the procedure timestamp from MariaDB
+get_proc_timestamp() {
+  mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -Nse "
+    SELECT DATE_FORMAT(LAST_ALTERED, '%Y-%m-%d %H:%i:%s')
+    FROM information_schema.ROUTINES
+    WHERE ROUTINE_SCHEMA = \"$MYSQL_DATABASE\" AND ROUTINE_NAME = 'fill_missing_months';
+  "
+}
+
+# Check if procedure exists and get last altered time
+if [ ! -f "define_fill_missing_months.sql" ]; then
+  echo "$(date) CRITICAL $0: SQL definition file 'define_fill_missing_months.sql' not found!" | tee -a $ACTBASE/log/act.log
+  exit 1
+fi
+
+file_mtime=$(date -u -r "define_fill_missing_months.sql" '+%Y-%m-%d %H:%M:%S')
+
+proc_timestamp=$(get_proc_timestamp)
+
+if [ -z "$proc_timestamp" ]; then
+  echo "$(date) INFO $0: Stored procedure 'fill_missing_months' does not exist in $MYSQL_DATABASE. Creating it..." | tee -a $ACTBASE/log/act.log
+  mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD < "define_fill_missing_months.sql"
+  echo "$(date) INFO $0: Procedure 'fill_missing_months' created successfully." | tee -a $ACTBASE/log/act.log
+else
+  echo "$(date) INFO S0: Local file modified: $file_mtime" | tee -a $ACTBASE/log/act.log
+  echo "$(date) INFO $0: Database procedure last altered: $proc_timestamp" | tee -a $ACTBASE/log/act.log
+
+  file_epoch=$(date -d "$file_mtime" +%s)
+  db_epoch=$(date -d "$proc_timestamp" +%s)
+
+  if [ "$file_epoch" -gt "$db_epoch" ]; then
+    echo "$(date) INFO S0: SQL file is newer — updating stored procedure..." | tee -a $ACTBASE/log/act.log
+    mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e "DROP PROCEDURE IF EXISTS fill_missing_months;"
+    mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD < "define_fill_missing_months.sql"
+    echo "Procedure 'fill_missing_months' updated successfully."
+  else
+    echo "$(date) INFO $0: Stored procedure is up to date." | tee -a $ACTBASE/log/act.log
+  fi
+fi
+
+echo ""
+echo "$(date) INFO S0: Running procedure 'fill_missing_months' for all investment accounts..." | tee -a $ACTBASE/log/act.log
+
+for act in $(mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -sbNe "SELECT id FROM accounts WHERE type='investment';"); do
+    echo "$(date) INFO $0 Processing account $act..." | tee -a $ACTBASE/log/act.log
+    echo "$(date) INFO $0 mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p***** -e \"CALL fill_missing_months($act)\"" | tee -a $ACTBASE/log/act.log
+    mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e "CALL fill_missing_months($act)"
+done
+
+echo "$(date) INFO $0 All investment accounts processed." | tee -a $ACTBASE/log/act.log
+

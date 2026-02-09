@@ -1,0 +1,1193 @@
+{
+    "dashboard": {
+        "id": null,
+        "uid": null,
+        "title": "Spending Overview",
+        "timezone": "browser",
+        "panels": [
+            {
+                "id": 1,
+                "type": "timeseries",
+                "title": "Spending",
+                "datasource": {
+                    "type": "mysql",
+                    "name": "account"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "format": "time_series",
+                        "rawSql": "\nSELECT\n  category_monthly_totals.month_end AS time,\n  categories.name AS metric,\n  ABS(SUM(category_monthly_totals.total_amount)) AS value\nFROM category_monthly_totals\nJOIN categories ON categories.id = category_monthly_totals.category_id\nWHERE categories.parent_id IS NULL\nAND categories.name not in ('Investment', 'Income','Transfer')\nGROUP BY time, metric\nORDER BY time\n",
+                        "timeColumn": "time",
+                        "metricColumn": "metric",
+                        "timeColumnType": "datetime",
+                        "datasource": {
+                            "type": "mysql",
+                            "name": "account"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "custom": {
+                            "stacking": {
+                                "category": "A",
+                                "mode": "normal"
+                            },
+                            "fillOpacity": 67,
+                            "gradientMode": "opacity",
+                            "drawStyle": "line"
+                        }
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 24,
+                    "w": 24,
+                    "x": 0,
+                    "y": 0
+                },
+                "options": {
+                    "legend": {
+                        "calcs": [
+                            "lastNotNull",
+                            "min",
+                            "max",
+                            "mean"
+                        ],
+                        "displayMode": "table",
+                        "placement": "bottom",
+                        "showLegend": "true"
+                    }
+                }
+            },
+            {
+                "id": 2,
+                "type": "row",
+                "title": "Bank",
+                "collapsed": true,
+                "gridPos": {
+                    "h": 24,
+                    "w": 24,
+                    "x": 0,
+                    "y": 24
+                },
+                "panels": [
+                    {
+                        "id": 3,
+                        "type": "timeseries",
+                        "title": "Bank - Sub categories",
+                        "datasource": {
+                            "type": "mysql",
+                            "name": "account"
+                        },
+                        "targets": [
+                            {
+                                "refId": "A",
+                                "format": "time_series",
+                                "rawSql": "\nSELECT\n  category_monthly_totals.month_end AS time,\n  c.name AS metric,\n  ABS(SUM(category_monthly_totals.total_amount)) AS value\nFROM category_monthly_totals\nJOIN categories c ON c.id = category_monthly_totals.category_id\nWHERE c.parent_id = 2\nGROUP BY time, metric\nORDER BY time\n",
+                                "timeColumn": "time",
+                                "metricColumn": "metric",
+                                "timeColumnType": "datetime",
+                                "datasource": {
+                                    "type": "mysql",
+                                    "name": "account"
+                                }
+                            }
+                        ],
+                        "fieldConfig": {
+                            "defaults": {
+                                "custom": {
+                                    "stacking": {
+                                        "category": "A",
+                                        "mode": "normal"
+                                    },
+                                    "fillOpacity": 67,
+                                    "gradientMode": "opacity",
+                                    "drawStyle": "line"
+                                }
+                            },
+                            "overrides": []
+                        },
+                        "gridPos": {
+                            "h": 24,
+                            "w": 24,
+                            "x": 0,
+                            "y": 48
+                        },
+                        "options": {
+                            "legend": {
+                                "calcs": [
+                                    "lastNotNull",
+                                    "min",
+                                    "max",
+                                    "mean"
+                                ],
+                                "displayMode": "table",
+                                "placement": "bottom",
+                                "showLegend": "true"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "id": 4,
+                "type": "row",
+                "title": "Car",
+                "collapsed": true,
+                "gridPos": {
+                    "h": 24,
+                    "w": 24,
+                    "x": 0,
+                    "y": 72
+                },
+                "panels": [
+                    {
+                        "id": 5,
+                        "type": "timeseries",
+                        "title": "Car - Sub categories",
+                        "datasource": {
+                            "type": "mysql",
+                            "name": "account"
+                        },
+                        "targets": [
+                            {
+                                "refId": "A",
+                                "format": "time_series",
+                                "rawSql": "\nSELECT\n  category_monthly_totals.month_end AS time,\n  c.name AS metric,\n  ABS(SUM(category_monthly_totals.total_amount)) AS value\nFROM category_monthly_totals\nJOIN categories c ON c.id = category_monthly_totals.category_id\nWHERE c.parent_id = 9\nGROUP BY time, metric\nORDER BY time\n",
+                                "timeColumn": "time",
+                                "metricColumn": "metric",
+                                "timeColumnType": "datetime",
+                                "datasource": {
+                                    "type": "mysql",
+                                    "name": "account"
+                                }
+                            }
+                        ],
+                        "fieldConfig": {
+                            "defaults": {
+                                "custom": {
+                                    "stacking": {
+                                        "category": "A",
+                                        "mode": "normal"
+                                    },
+                                    "fillOpacity": 67,
+                                    "gradientMode": "opacity",
+                                    "drawStyle": "line"
+                                }
+                            },
+                            "overrides": []
+                        },
+                        "gridPos": {
+                            "h": 24,
+                            "w": 24,
+                            "x": 0,
+                            "y": 96
+                        },
+                        "options": {
+                            "legend": {
+                                "calcs": [
+                                    "lastNotNull",
+                                    "min",
+                                    "max",
+                                    "mean"
+                                ],
+                                "displayMode": "table",
+                                "placement": "bottom",
+                                "showLegend": "true"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "id": 6,
+                "type": "row",
+                "title": "House",
+                "collapsed": true,
+                "gridPos": {
+                    "h": 24,
+                    "w": 24,
+                    "x": 0,
+                    "y": 120
+                },
+                "panels": [
+                    {
+                        "id": 7,
+                        "type": "timeseries",
+                        "title": "House - Sub categories",
+                        "datasource": {
+                            "type": "mysql",
+                            "name": "account"
+                        },
+                        "targets": [
+                            {
+                                "refId": "A",
+                                "format": "time_series",
+                                "rawSql": "\nSELECT\n  category_monthly_totals.month_end AS time,\n  c.name AS metric,\n  ABS(SUM(category_monthly_totals.total_amount)) AS value\nFROM category_monthly_totals\nJOIN categories c ON c.id = category_monthly_totals.category_id\nWHERE c.parent_id = 36\nGROUP BY time, metric\nORDER BY time\n",
+                                "timeColumn": "time",
+                                "metricColumn": "metric",
+                                "timeColumnType": "datetime",
+                                "datasource": {
+                                    "type": "mysql",
+                                    "name": "account"
+                                }
+                            }
+                        ],
+                        "fieldConfig": {
+                            "defaults": {
+                                "custom": {
+                                    "stacking": {
+                                        "category": "A",
+                                        "mode": "normal"
+                                    },
+                                    "fillOpacity": 67,
+                                    "gradientMode": "opacity",
+                                    "drawStyle": "line"
+                                }
+                            },
+                            "overrides": []
+                        },
+                        "gridPos": {
+                            "h": 24,
+                            "w": 24,
+                            "x": 0,
+                            "y": 144
+                        },
+                        "options": {
+                            "legend": {
+                                "calcs": [
+                                    "lastNotNull",
+                                    "min",
+                                    "max",
+                                    "mean"
+                                ],
+                                "displayMode": "table",
+                                "placement": "bottom",
+                                "showLegend": "true"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "id": 8,
+                "type": "row",
+                "title": "Miscellaneous",
+                "collapsed": true,
+                "gridPos": {
+                    "h": 24,
+                    "w": 24,
+                    "x": 0,
+                    "y": 168
+                },
+                "panels": [
+                    {
+                        "id": 9,
+                        "type": "timeseries",
+                        "title": "Miscellaneous - Sub categories",
+                        "datasource": {
+                            "type": "mysql",
+                            "name": "account"
+                        },
+                        "targets": [
+                            {
+                                "refId": "A",
+                                "format": "time_series",
+                                "rawSql": "\nSELECT\n  category_monthly_totals.month_end AS time,\n  c.name AS metric,\n  ABS(SUM(category_monthly_totals.total_amount)) AS value\nFROM category_monthly_totals\nJOIN categories c ON c.id = category_monthly_totals.category_id\nWHERE c.parent_id = 48\nGROUP BY time, metric\nORDER BY time\n",
+                                "timeColumn": "time",
+                                "metricColumn": "metric",
+                                "timeColumnType": "datetime",
+                                "datasource": {
+                                    "type": "mysql",
+                                    "name": "account"
+                                }
+                            }
+                        ],
+                        "fieldConfig": {
+                            "defaults": {
+                                "custom": {
+                                    "stacking": {
+                                        "category": "A",
+                                        "mode": "normal"
+                                    },
+                                    "fillOpacity": 67,
+                                    "gradientMode": "opacity",
+                                    "drawStyle": "line"
+                                }
+                            },
+                            "overrides": []
+                        },
+                        "gridPos": {
+                            "h": 24,
+                            "w": 24,
+                            "x": 0,
+                            "y": 192
+                        },
+                        "options": {
+                            "legend": {
+                                "calcs": [
+                                    "lastNotNull",
+                                    "min",
+                                    "max",
+                                    "mean"
+                                ],
+                                "displayMode": "table",
+                                "placement": "bottom",
+                                "showLegend": "true"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "id": 10,
+                "type": "row",
+                "title": "Health",
+                "collapsed": true,
+                "gridPos": {
+                    "h": 24,
+                    "w": 24,
+                    "x": 0,
+                    "y": 216
+                },
+                "panels": [
+                    {
+                        "id": 11,
+                        "type": "timeseries",
+                        "title": "Health - Sub categories",
+                        "datasource": {
+                            "type": "mysql",
+                            "name": "account"
+                        },
+                        "targets": [
+                            {
+                                "refId": "A",
+                                "format": "time_series",
+                                "rawSql": "\nSELECT\n  category_monthly_totals.month_end AS time,\n  c.name AS metric,\n  ABS(SUM(category_monthly_totals.total_amount)) AS value\nFROM category_monthly_totals\nJOIN categories c ON c.id = category_monthly_totals.category_id\nWHERE c.parent_id = 78\nGROUP BY time, metric\nORDER BY time\n",
+                                "timeColumn": "time",
+                                "metricColumn": "metric",
+                                "timeColumnType": "datetime",
+                                "datasource": {
+                                    "type": "mysql",
+                                    "name": "account"
+                                }
+                            }
+                        ],
+                        "fieldConfig": {
+                            "defaults": {
+                                "custom": {
+                                    "stacking": {
+                                        "category": "A",
+                                        "mode": "normal"
+                                    },
+                                    "fillOpacity": 67,
+                                    "gradientMode": "opacity",
+                                    "drawStyle": "line"
+                                }
+                            },
+                            "overrides": []
+                        },
+                        "gridPos": {
+                            "h": 24,
+                            "w": 24,
+                            "x": 0,
+                            "y": 240
+                        },
+                        "options": {
+                            "legend": {
+                                "calcs": [
+                                    "lastNotNull",
+                                    "min",
+                                    "max",
+                                    "mean"
+                                ],
+                                "displayMode": "table",
+                                "placement": "bottom",
+                                "showLegend": "true"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "id": 12,
+                "type": "row",
+                "title": "Food",
+                "collapsed": true,
+                "gridPos": {
+                    "h": 24,
+                    "w": 24,
+                    "x": 0,
+                    "y": 264
+                },
+                "panels": [
+                    {
+                        "id": 13,
+                        "type": "timeseries",
+                        "title": "Food - Sub categories",
+                        "datasource": {
+                            "type": "mysql",
+                            "name": "account"
+                        },
+                        "targets": [
+                            {
+                                "refId": "A",
+                                "format": "time_series",
+                                "rawSql": "\nSELECT\n  category_monthly_totals.month_end AS time,\n  c.name AS metric,\n  ABS(SUM(category_monthly_totals.total_amount)) AS value\nFROM category_monthly_totals\nJOIN categories c ON c.id = category_monthly_totals.category_id\nWHERE c.parent_id = 79\nGROUP BY time, metric\nORDER BY time\n",
+                                "timeColumn": "time",
+                                "metricColumn": "metric",
+                                "timeColumnType": "datetime",
+                                "datasource": {
+                                    "type": "mysql",
+                                    "name": "account"
+                                }
+                            }
+                        ],
+                        "fieldConfig": {
+                            "defaults": {
+                                "custom": {
+                                    "stacking": {
+                                        "category": "A",
+                                        "mode": "normal"
+                                    },
+                                    "fillOpacity": 67,
+                                    "gradientMode": "opacity",
+                                    "drawStyle": "line"
+                                }
+                            },
+                            "overrides": []
+                        },
+                        "gridPos": {
+                            "h": 24,
+                            "w": 24,
+                            "x": 0,
+                            "y": 288
+                        },
+                        "options": {
+                            "legend": {
+                                "calcs": [
+                                    "lastNotNull",
+                                    "min",
+                                    "max",
+                                    "mean"
+                                ],
+                                "displayMode": "table",
+                                "placement": "bottom",
+                                "showLegend": "true"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "id": 14,
+                "type": "row",
+                "title": "Leisure",
+                "collapsed": true,
+                "gridPos": {
+                    "h": 24,
+                    "w": 24,
+                    "x": 0,
+                    "y": 312
+                },
+                "panels": [
+                    {
+                        "id": 15,
+                        "type": "timeseries",
+                        "title": "Leisure - Sub categories",
+                        "datasource": {
+                            "type": "mysql",
+                            "name": "account"
+                        },
+                        "targets": [
+                            {
+                                "refId": "A",
+                                "format": "time_series",
+                                "rawSql": "\nSELECT\n  category_monthly_totals.month_end AS time,\n  c.name AS metric,\n  ABS(SUM(category_monthly_totals.total_amount)) AS value\nFROM category_monthly_totals\nJOIN categories c ON c.id = category_monthly_totals.category_id\nWHERE c.parent_id = 80\nGROUP BY time, metric\nORDER BY time\n",
+                                "timeColumn": "time",
+                                "metricColumn": "metric",
+                                "timeColumnType": "datetime",
+                                "datasource": {
+                                    "type": "mysql",
+                                    "name": "account"
+                                }
+                            }
+                        ],
+                        "fieldConfig": {
+                            "defaults": {
+                                "custom": {
+                                    "stacking": {
+                                        "category": "A",
+                                        "mode": "normal"
+                                    },
+                                    "fillOpacity": 67,
+                                    "gradientMode": "opacity",
+                                    "drawStyle": "line"
+                                }
+                            },
+                            "overrides": []
+                        },
+                        "gridPos": {
+                            "h": 24,
+                            "w": 24,
+                            "x": 0,
+                            "y": 336
+                        },
+                        "options": {
+                            "legend": {
+                                "calcs": [
+                                    "lastNotNull",
+                                    "min",
+                                    "max",
+                                    "mean"
+                                ],
+                                "displayMode": "table",
+                                "placement": "bottom",
+                                "showLegend": "true"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "id": 16,
+                "type": "row",
+                "title": "Tax",
+                "collapsed": true,
+                "gridPos": {
+                    "h": 24,
+                    "w": 24,
+                    "x": 0,
+                    "y": 360
+                },
+                "panels": [
+                    {
+                        "id": 17,
+                        "type": "timeseries",
+                        "title": "Tax - Sub categories",
+                        "datasource": {
+                            "type": "mysql",
+                            "name": "account"
+                        },
+                        "targets": [
+                            {
+                                "refId": "A",
+                                "format": "time_series",
+                                "rawSql": "\nSELECT\n  category_monthly_totals.month_end AS time,\n  c.name AS metric,\n  ABS(SUM(category_monthly_totals.total_amount)) AS value\nFROM category_monthly_totals\nJOIN categories c ON c.id = category_monthly_totals.category_id\nWHERE c.parent_id = 83\nGROUP BY time, metric\nORDER BY time\n",
+                                "timeColumn": "time",
+                                "metricColumn": "metric",
+                                "timeColumnType": "datetime",
+                                "datasource": {
+                                    "type": "mysql",
+                                    "name": "account"
+                                }
+                            }
+                        ],
+                        "fieldConfig": {
+                            "defaults": {
+                                "custom": {
+                                    "stacking": {
+                                        "category": "A",
+                                        "mode": "normal"
+                                    },
+                                    "fillOpacity": 67,
+                                    "gradientMode": "opacity",
+                                    "drawStyle": "line"
+                                }
+                            },
+                            "overrides": []
+                        },
+                        "gridPos": {
+                            "h": 24,
+                            "w": 24,
+                            "x": 0,
+                            "y": 384
+                        },
+                        "options": {
+                            "legend": {
+                                "calcs": [
+                                    "lastNotNull",
+                                    "min",
+                                    "max",
+                                    "mean"
+                                ],
+                                "displayMode": "table",
+                                "placement": "bottom",
+                                "showLegend": "true"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "id": 18,
+                "type": "row",
+                "title": "Amazon",
+                "collapsed": true,
+                "gridPos": {
+                    "h": 24,
+                    "w": 24,
+                    "x": 0,
+                    "y": 408
+                },
+                "panels": [
+                    {
+                        "id": 19,
+                        "type": "timeseries",
+                        "title": "Amazon - Sub categories",
+                        "datasource": {
+                            "type": "mysql",
+                            "name": "account"
+                        },
+                        "targets": [
+                            {
+                                "refId": "A",
+                                "format": "time_series",
+                                "rawSql": "\nSELECT\n  category_monthly_totals.month_end AS time,\n  c.name AS metric,\n  ABS(SUM(category_monthly_totals.total_amount)) AS value\nFROM category_monthly_totals\nJOIN categories c ON c.id = category_monthly_totals.category_id\nWHERE c.parent_id = 88\nGROUP BY time, metric\nORDER BY time\n",
+                                "timeColumn": "time",
+                                "metricColumn": "metric",
+                                "timeColumnType": "datetime",
+                                "datasource": {
+                                    "type": "mysql",
+                                    "name": "account"
+                                }
+                            }
+                        ],
+                        "fieldConfig": {
+                            "defaults": {
+                                "custom": {
+                                    "stacking": {
+                                        "category": "A",
+                                        "mode": "normal"
+                                    },
+                                    "fillOpacity": 67,
+                                    "gradientMode": "opacity",
+                                    "drawStyle": "line"
+                                }
+                            },
+                            "overrides": []
+                        },
+                        "gridPos": {
+                            "h": 24,
+                            "w": 24,
+                            "x": 0,
+                            "y": 432
+                        },
+                        "options": {
+                            "legend": {
+                                "calcs": [
+                                    "lastNotNull",
+                                    "min",
+                                    "max",
+                                    "mean"
+                                ],
+                                "displayMode": "table",
+                                "placement": "bottom",
+                                "showLegend": "true"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "id": 20,
+                "type": "row",
+                "title": "PersonalCare",
+                "collapsed": true,
+                "gridPos": {
+                    "h": 24,
+                    "w": 24,
+                    "x": 0,
+                    "y": 456
+                },
+                "panels": [
+                    {
+                        "id": 21,
+                        "type": "timeseries",
+                        "title": "PersonalCare - Sub categories",
+                        "datasource": {
+                            "type": "mysql",
+                            "name": "account"
+                        },
+                        "targets": [
+                            {
+                                "refId": "A",
+                                "format": "time_series",
+                                "rawSql": "\nSELECT\n  category_monthly_totals.month_end AS time,\n  c.name AS metric,\n  ABS(SUM(category_monthly_totals.total_amount)) AS value\nFROM category_monthly_totals\nJOIN categories c ON c.id = category_monthly_totals.category_id\nWHERE c.parent_id = 95\nGROUP BY time, metric\nORDER BY time\n",
+                                "timeColumn": "time",
+                                "metricColumn": "metric",
+                                "timeColumnType": "datetime",
+                                "datasource": {
+                                    "type": "mysql",
+                                    "name": "account"
+                                }
+                            }
+                        ],
+                        "fieldConfig": {
+                            "defaults": {
+                                "custom": {
+                                    "stacking": {
+                                        "category": "A",
+                                        "mode": "normal"
+                                    },
+                                    "fillOpacity": 67,
+                                    "gradientMode": "opacity",
+                                    "drawStyle": "line"
+                                }
+                            },
+                            "overrides": []
+                        },
+                        "gridPos": {
+                            "h": 24,
+                            "w": 24,
+                            "x": 0,
+                            "y": 480
+                        },
+                        "options": {
+                            "legend": {
+                                "calcs": [
+                                    "lastNotNull",
+                                    "min",
+                                    "max",
+                                    "mean"
+                                ],
+                                "displayMode": "table",
+                                "placement": "bottom",
+                                "showLegend": "true"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "id": 22,
+                "type": "row",
+                "title": "Utilities",
+                "collapsed": true,
+                "gridPos": {
+                    "h": 24,
+                    "w": 24,
+                    "x": 0,
+                    "y": 504
+                },
+                "panels": [
+                    {
+                        "id": 23,
+                        "type": "timeseries",
+                        "title": "Utilities - Sub categories",
+                        "datasource": {
+                            "type": "mysql",
+                            "name": "account"
+                        },
+                        "targets": [
+                            {
+                                "refId": "A",
+                                "format": "time_series",
+                                "rawSql": "\nSELECT\n  category_monthly_totals.month_end AS time,\n  c.name AS metric,\n  ABS(SUM(category_monthly_totals.total_amount)) AS value\nFROM category_monthly_totals\nJOIN categories c ON c.id = category_monthly_totals.category_id\nWHERE c.parent_id = 96\nGROUP BY time, metric\nORDER BY time\n",
+                                "timeColumn": "time",
+                                "metricColumn": "metric",
+                                "timeColumnType": "datetime",
+                                "datasource": {
+                                    "type": "mysql",
+                                    "name": "account"
+                                }
+                            }
+                        ],
+                        "fieldConfig": {
+                            "defaults": {
+                                "custom": {
+                                    "stacking": {
+                                        "category": "A",
+                                        "mode": "normal"
+                                    },
+                                    "fillOpacity": 67,
+                                    "gradientMode": "opacity",
+                                    "drawStyle": "line"
+                                }
+                            },
+                            "overrides": []
+                        },
+                        "gridPos": {
+                            "h": 24,
+                            "w": 24,
+                            "x": 0,
+                            "y": 528
+                        },
+                        "options": {
+                            "legend": {
+                                "calcs": [
+                                    "lastNotNull",
+                                    "min",
+                                    "max",
+                                    "mean"
+                                ],
+                                "displayMode": "table",
+                                "placement": "bottom",
+                                "showLegend": "true"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "id": 24,
+                "type": "row",
+                "title": "Cash",
+                "collapsed": true,
+                "gridPos": {
+                    "h": 24,
+                    "w": 24,
+                    "x": 0,
+                    "y": 552
+                },
+                "panels": [
+                    {
+                        "id": 25,
+                        "type": "timeseries",
+                        "title": "Cash - Sub categories",
+                        "datasource": {
+                            "type": "mysql",
+                            "name": "account"
+                        },
+                        "targets": [
+                            {
+                                "refId": "A",
+                                "format": "time_series",
+                                "rawSql": "\nSELECT\n  category_monthly_totals.month_end AS time,\n  c.name AS metric,\n  ABS(SUM(category_monthly_totals.total_amount)) AS value\nFROM category_monthly_totals\nJOIN categories c ON c.id = category_monthly_totals.category_id\nWHERE c.parent_id = 102\nGROUP BY time, metric\nORDER BY time\n",
+                                "timeColumn": "time",
+                                "metricColumn": "metric",
+                                "timeColumnType": "datetime",
+                                "datasource": {
+                                    "type": "mysql",
+                                    "name": "account"
+                                }
+                            }
+                        ],
+                        "fieldConfig": {
+                            "defaults": {
+                                "custom": {
+                                    "stacking": {
+                                        "category": "A",
+                                        "mode": "normal"
+                                    },
+                                    "fillOpacity": 67,
+                                    "gradientMode": "opacity",
+                                    "drawStyle": "line"
+                                }
+                            },
+                            "overrides": []
+                        },
+                        "gridPos": {
+                            "h": 24,
+                            "w": 24,
+                            "x": 0,
+                            "y": 576
+                        },
+                        "options": {
+                            "legend": {
+                                "calcs": [
+                                    "lastNotNull",
+                                    "min",
+                                    "max",
+                                    "mean"
+                                ],
+                                "displayMode": "table",
+                                "placement": "bottom",
+                                "showLegend": "true"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "id": 26,
+                "type": "row",
+                "title": "Investment",
+                "collapsed": true,
+                "gridPos": {
+                    "h": 24,
+                    "w": 24,
+                    "x": 0,
+                    "y": 600
+                },
+                "panels": [
+                    {
+                        "id": 27,
+                        "type": "timeseries",
+                        "title": "Investment - Sub categories",
+                        "datasource": {
+                            "type": "mysql",
+                            "name": "account"
+                        },
+                        "targets": [
+                            {
+                                "refId": "A",
+                                "format": "time_series",
+                                "rawSql": "\nSELECT\n  category_monthly_totals.month_end AS time,\n  c.name AS metric,\n  ABS(SUM(category_monthly_totals.total_amount)) AS value\nFROM category_monthly_totals\nJOIN categories c ON c.id = category_monthly_totals.category_id\nWHERE c.parent_id = 108\nGROUP BY time, metric\nORDER BY time\n",
+                                "timeColumn": "time",
+                                "metricColumn": "metric",
+                                "timeColumnType": "datetime",
+                                "datasource": {
+                                    "type": "mysql",
+                                    "name": "account"
+                                }
+                            }
+                        ],
+                        "fieldConfig": {
+                            "defaults": {
+                                "custom": {
+                                    "stacking": {
+                                        "category": "A",
+                                        "mode": "normal"
+                                    },
+                                    "fillOpacity": 67,
+                                    "gradientMode": "opacity",
+                                    "drawStyle": "line"
+                                }
+                            },
+                            "overrides": []
+                        },
+                        "gridPos": {
+                            "h": 24,
+                            "w": 24,
+                            "x": 0,
+                            "y": 624
+                        },
+                        "options": {
+                            "legend": {
+                                "calcs": [
+                                    "lastNotNull",
+                                    "min",
+                                    "max",
+                                    "mean"
+                                ],
+                                "displayMode": "table",
+                                "placement": "bottom",
+                                "showLegend": "true"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "id": 28,
+                "type": "row",
+                "title": "Income",
+                "collapsed": true,
+                "gridPos": {
+                    "h": 24,
+                    "w": 24,
+                    "x": 0,
+                    "y": 648
+                },
+                "panels": [
+                    {
+                        "id": 29,
+                        "type": "timeseries",
+                        "title": "Income - Sub categories",
+                        "datasource": {
+                            "type": "mysql",
+                            "name": "account"
+                        },
+                        "targets": [
+                            {
+                                "refId": "A",
+                                "format": "time_series",
+                                "rawSql": "\nSELECT\n  category_monthly_totals.month_end AS time,\n  c.name AS metric,\n  ABS(SUM(category_monthly_totals.total_amount)) AS value\nFROM category_monthly_totals\nJOIN categories c ON c.id = category_monthly_totals.category_id\nWHERE c.parent_id = 116\nGROUP BY time, metric\nORDER BY time\n",
+                                "timeColumn": "time",
+                                "metricColumn": "metric",
+                                "timeColumnType": "datetime",
+                                "datasource": {
+                                    "type": "mysql",
+                                    "name": "account"
+                                }
+                            }
+                        ],
+                        "fieldConfig": {
+                            "defaults": {
+                                "custom": {
+                                    "stacking": {
+                                        "category": "A",
+                                        "mode": "normal"
+                                    },
+                                    "fillOpacity": 67,
+                                    "gradientMode": "opacity",
+                                    "drawStyle": "line"
+                                }
+                            },
+                            "overrides": []
+                        },
+                        "gridPos": {
+                            "h": 24,
+                            "w": 24,
+                            "x": 0,
+                            "y": 672
+                        },
+                        "options": {
+                            "legend": {
+                                "calcs": [
+                                    "lastNotNull",
+                                    "min",
+                                    "max",
+                                    "mean"
+                                ],
+                                "displayMode": "table",
+                                "placement": "bottom",
+                                "showLegend": "true"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "id": 30,
+                "type": "row",
+                "title": "Transfer",
+                "collapsed": true,
+                "gridPos": {
+                    "h": 24,
+                    "w": 24,
+                    "x": 0,
+                    "y": 696
+                },
+                "panels": [
+                    {
+                        "id": 31,
+                        "type": "timeseries",
+                        "title": "Transfer - Sub categories",
+                        "datasource": {
+                            "type": "mysql",
+                            "name": "account"
+                        },
+                        "targets": [
+                            {
+                                "refId": "A",
+                                "format": "time_series",
+                                "rawSql": "\nSELECT\n  category_monthly_totals.month_end AS time,\n  c.name AS metric,\n  ABS(SUM(category_monthly_totals.total_amount)) AS value\nFROM category_monthly_totals\nJOIN categories c ON c.id = category_monthly_totals.category_id\nWHERE c.parent_id = 119\nGROUP BY time, metric\nORDER BY time\n",
+                                "timeColumn": "time",
+                                "metricColumn": "metric",
+                                "timeColumnType": "datetime",
+                                "datasource": {
+                                    "type": "mysql",
+                                    "name": "account"
+                                }
+                            }
+                        ],
+                        "fieldConfig": {
+                            "defaults": {
+                                "custom": {
+                                    "stacking": {
+                                        "category": "A",
+                                        "mode": "normal"
+                                    },
+                                    "fillOpacity": 67,
+                                    "gradientMode": "opacity",
+                                    "drawStyle": "line"
+                                }
+                            },
+                            "overrides": []
+                        },
+                        "gridPos": {
+                            "h": 24,
+                            "w": 24,
+                            "x": 0,
+                            "y": 720
+                        },
+                        "options": {
+                            "legend": {
+                                "calcs": [
+                                    "lastNotNull",
+                                    "min",
+                                    "max",
+                                    "mean"
+                                ],
+                                "displayMode": "table",
+                                "placement": "bottom",
+                                "showLegend": "true"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "id": 32,
+                "type": "row",
+                "title": "Insurance",
+                "collapsed": true,
+                "gridPos": {
+                    "h": 24,
+                    "w": 24,
+                    "x": 0,
+                    "y": 744
+                },
+                "panels": [
+                    {
+                        "id": 33,
+                        "type": "timeseries",
+                        "title": "Insurance - Sub categories",
+                        "datasource": {
+                            "type": "mysql",
+                            "name": "account"
+                        },
+                        "targets": [
+                            {
+                                "refId": "A",
+                                "format": "time_series",
+                                "rawSql": "\nSELECT\n  category_monthly_totals.month_end AS time,\n  c.name AS metric,\n  ABS(SUM(category_monthly_totals.total_amount)) AS value\nFROM category_monthly_totals\nJOIN categories c ON c.id = category_monthly_totals.category_id\nWHERE c.parent_id = 122\nGROUP BY time, metric\nORDER BY time\n",
+                                "timeColumn": "time",
+                                "metricColumn": "metric",
+                                "timeColumnType": "datetime",
+                                "datasource": {
+                                    "type": "mysql",
+                                    "name": "account"
+                                }
+                            }
+                        ],
+                        "fieldConfig": {
+                            "defaults": {
+                                "custom": {
+                                    "stacking": {
+                                        "category": "A",
+                                        "mode": "normal"
+                                    },
+                                    "fillOpacity": 67,
+                                    "gradientMode": "opacity",
+                                    "drawStyle": "line"
+                                }
+                            },
+                            "overrides": []
+                        },
+                        "gridPos": {
+                            "h": 24,
+                            "w": 24,
+                            "x": 0,
+                            "y": 768
+                        },
+                        "options": {
+                            "legend": {
+                                "calcs": [
+                                    "lastNotNull",
+                                    "min",
+                                    "max",
+                                    "mean"
+                                ],
+                                "displayMode": "table",
+                                "placement": "bottom",
+                                "showLegend": "true"
+                            }
+                        }
+                    }
+                ]
+            }
+        ],
+        "schemaVersion": 36,
+        "version": 0,
+        "time": {
+            "from": "now-1y",
+            "to": "now"
+        }
+    },
+    "overwrite": true
+}

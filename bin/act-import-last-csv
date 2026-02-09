@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Overall processing of the CVS:
+#       1. Retrieve the file name pattern as define during each account creation.
+#	2. Optional using ACTEXTRACSV env varialbe to retrieve the files downloaded in a desktop/network drive.
+# 	3. Adding a date to the filename to avoid files being overwritten for some banks.
+#  	4. Backup the DB
+#	5. Processing the files into the DB.
+#	6. Classify the well-known transaction
+#	7. Review the new transactions and overall spending against the previous month.
+
+# Cronjob entry point.
+dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+. $dir/act_utils.sh
+
+fp=$(mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -sbNe "select file from accounts"| sort -u)
+fr=$(echo "$fp" | sed -e "s/^/--include=/g" | tr '\n' ' ')
+
+# Collecting files downloaded from bank web sites and remotely available in network drive/desktop using rsync.
+if [ -n "$ACTEXTRACSV" ];then
+     echo "$(date) INFO rsync -avz $fr --exclude='*' $ACTEXTRACSV: $ACTDATA/incoming/" | tee -a $ACTLOG/act.log
+     rsync -avz $fr --exclude='*' $ACTEXTRACSV: $ACTDATA/incoming/
+     echo "$(date) INFO ssh $ACTEXTRACSV \"rm $fp\"" | tee -a $ACTLOG/act.log
+     ssh $ACTEXTRACSV rm $fp 2>/dev/null
+fi
+
+# Adding the date to the filename
+cd $ACTDATA/incoming
+echo "$(date) INFO $0: Files received:" | tee -a $ACTBASE/log/act.log
+ls
+for f in $(ls $fp 2>/dev/null | tr ' ' '@'); do
+   echo "$(date) INFO $0: $f" | tee -a $ACTBASE/log/act.log
+    dst="${f//@/}" 
+    echo "$(date) INFO $0: mv \"${f//@/ }\" ${dst%%.*}.$(date +%Y-%m-%d).csv " | tee -a $ACTBASE/log/act.log
+    mv "${f//@/ }" ${dst%%.*}.$(date +%Y-%m-%d).csv 
+done
+
+
+$ACTBASE/bin/act-backup-db
+$ACTBASE/bin/act-process-csv
+
+
+echo "$(date) INFO $0: Classification is running..." | tee -a $ACTBASE/log/act.log
+$ACTBASE/bin/act-classify 
+$ACTBASE/bin/act-review
+

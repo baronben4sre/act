@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Summarize the categories with the higher spending for the current and previous month.
+# $1 = account_id1,account_id2,...
+
+if [ $# -eq 0 ];then
+   echo "Usage: $0 account_id "
+   echo "Example: $0 1 "
+   exit 3
+fi
+echo "Last month spending starting on $(mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -sBNe 'select DATE_SUB(CURDATE(),INTERVAL 31 DAY)'):"
+mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e "select sum(t.amount),c.name,c.id from transactions t, categories c where c.id=t.category_id and DATE_SUB(CURDATE(),INTERVAL 31 DAY) <= t.operation and account_id in ($1) group by t.category_id order by sum(t.amount)"
+
+echo
+echo "For reference, the previous month data ($(mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -sBNe 'select DATE_SUB(CURDATE(),INTERVAL 62 DAY)') - $(mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -sBNe 'select DATE_SUB(CURDATE(),INTERVAL 31 DAY)')):"
+mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e "select sum(t.amount),c.name,c.id from transactions t, categories c where c.id=t.category_id and DATE_SUB(CURDATE(),INTERVAL 31 DAY) > t.operation and DATE_SUB(CURDATE(),INTERVAL 62 DAY) <= t.operation and account_id in ($1) group by t.category_id order by sum(t.amount)"

@@ -1,0 +1,378 @@
+#!/bin/bash
+
+# Note: Disregard the table (transactions), the import script will replace it with the right table name.
+
+# End run first...
+
+# Income
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=117 where libel like "%Salary%" and category_id=72'
+
+
+# Hotel
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=91 where libel like "%COMFORT INNS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=91 where libel like "%HAMPTON INN%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=91 where libel like "%La quinta%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=91 where libel like "%INN AND SUITES%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=91 where libel like "%INN & SUITES%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=91 where libel like "%HILTON%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=91 where libel like "%DAY% INN%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=91 where libel like "%resort%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=91 where libel like "%HOTEL%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=91 where libel like "KOA %" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=91 where libel like "RECREATION.GOV%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=91 where libel like "%STATE PARK%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=91 where libel like "%STATE PRK%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=91 where libel like "%PARK SERVICE%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=91 where libel like "EXPEDIA %" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=91 where libel like "%CAMPGROUND%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=91 where libel like "%BEST WESTERN%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=91 where libel like "%AIRBNB%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=91 where libel like "%RV PAR%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=91 where libel like "%CAP LODGE%" and category_id=72'
+
+# Resto
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%GODFATHERS ITALIAN GRI%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%DINER%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%ZAXBY%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%TST* MARKER 99" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%THE GULF%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%CRABBYS DOCKSIDE%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%RED LOBSTER%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%TERIYAKI MADNESS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%BANANAS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%MANGO MANGO%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%BREWING%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%PADDLEFISH%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%BUFFALO WILD WNGS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%SHRIMP BASKET DAVIS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%kitchen%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "% BAKERY%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%RESTAU%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%PIZZERIA%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%SNACK BAR%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%STEAK HOUSE%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%WHATABURGER%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%BENTO%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%FOOD & BEV%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%TEXAS ROADHOUSE%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%OLIVE GARDEN%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%cafe%" and category_id=72'
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%CULVERS%" and category_id=72'
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%sushi%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%CHIPOTLE%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%BRECKENRIDGE%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%FIREHOUSE SUBS %" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "% bar %" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%SMOOTHIE%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%Grill%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%STEAKS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%FIRST WATCH%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%SEAFOOD%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "PANDA EXPRESS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%BARCHETTA%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%SUNDAE %" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "Panera %" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%DUNKIN %" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "MCDONALD%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%PIZZA%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%STARBUCKS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "BIG TOMS DINER" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%COFFEE%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%BURGER KING%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%Long Doggers%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%Subway%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%OUTBACK%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=62 where libel like "%DOMINO%" and category_id=72'
+
+# Car
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=9 where libel like "%CAR WA%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=61 where libel like "%TIRE%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=46 where libel like "%TIRE KINGDOM%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=61 where libel like "%GOODYEAR %" and category_id=72'
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=25 where libel like "%LOVE%S %" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=25 where libel like "%FLYING%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=25 where libel like "7-11 STORE%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=25 where libel like "CIRCLE K%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=25 where libel like "%STATION TOTAL%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=25 where libel like "%STATION AVIA%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=25 where libel like "%DAC STATION%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=25 where libel like "%KUM&GO%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=25 where libel like "%STOP & GO%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=25 where libel like "EXXON%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=25 where libel like "SUNOCO%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=25 where libel like "%CUMBERLAND FARMS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=25 where libel like "WAWA%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=25 where libel like "PILOT%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=25 where libel like "CHEVRON%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=25 where libel like "SHELL OIL%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=25 where libel like "MARATHON PETRO%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=25 where libel like "RACETRAC%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=89 where libel like "Tesla Inc%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=89 where libel like "%EVGO %" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=89 where libel like "%SHELL RECHARGE%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=89 where libel like "%SUPERCHARGER%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=89 where libel like "%CHARGING%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=89 where libel like "%EV TRAIL%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=89 where libel like "Rivian%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=89 where libel like "%EV CONNECT%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=89 where libel like "chargepoint%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=89 where libel like "%ELECTRIFY%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=25 where libel like "7-ELEVEN%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=92 where libel like "%EZPASS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=92 where libel like "%DRIVEEZMD MPC%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=92 where libel like "% TOLLBY%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=92 where libel like "%ERACTOLL%" and category_id=72'
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=20 where libel like "%charity%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=20 where libel like "%DONATION%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=20 where libel like "UNICEF%" and category_id=72'
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=31 where libel like "%THE FRESH MARK%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=31 where libel like "%NATURAL GROCERS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=31 where libel like "EARTH FARE%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=31 where libel like "MOUNTAIN BROTHERS GENERAL%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=31 where libel like "%TRADER JOE%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=31 where libel like "%grocery %" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=31 where libel like "%Publix%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=31 where libel like "%Whole Foods%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=31 where libel like "WORLD MARKET%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=31 where libel like "%SPROUTS FARMERS MAR%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=31 where libel like "Wolrd market%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=31 where libel like "%SAFEWAY%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=31 where libel like "ALDI%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=31 where libel like "PrimePantry%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=31 where libel like "WINN-DIXIE%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=31 where libel like "%WHOLEFDS%" and category_id=72'
+
+# Do not separate and keep the order
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=25 where libel like "%COSTCO GAS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=68 where libel like "%COSTCO%" and category_id=72'
+# ---- End
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=68 where libel like "TARGET%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=68 where libel like "%WAL-MART%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=68 where libel like "WM SUPERCENTER%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=68 where libel like "%COST PLUS WLD%" and category_id=72'
+
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=63 where libel like "ACADEMY SPORTS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=63 where libel like "%BSN SPORTS LLC%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=63 where libel like "%US LACROSSE INC%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=65 where libel like "%fitness%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=66 where libel like "%crunch%" and category_id=72'
+
+
+# Phone abonment
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=59 where libel like "VZWRLSS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=59 where libel like "%VZW WEBPAY%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=59 where libel like "%VERIZON WIRELESS PAYMENTS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=59 where libel like "Sprint%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=59 where libel like "TMOBILE*PREPD AUTOPY" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=59 where libel like "%google *fi%" and category_id=72'
+
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=71 where libel like "SPECTRUM%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=71 where libel like "ESPN Plus%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=71 where libel like "NETFLIX%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=71 where libel like "Disney%PLUS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=71 where libel like "FuboTV Inc%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=71 where libel like "%express%vpn%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=71 where libel like "CBS ALL ACCESS%" and category_id=72'
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e "update transactions set category_id=55 where libel like \"DICK'S CLOTHING&SPORTING%\""
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e "update transactions set category_id=55 where libel like \"%BASS PRO%\""
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e "update transactions set category_id=55 where libel like \"%REI %\""
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=67 where libel like "%SCHOOLRECORD/TRANSCRIP" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=67 where libel like "%COLLEGE%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=67 where libel like "%SANDBOXX%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=67 where libel like "%UNIVERSITY%" and category_id=72'
+
+#IT
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=43 where libel like "%DRONES%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=43 where libel like "%NEWARK US%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=43 where libel like "%PIXEL FILM S%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=43 where libel like "%NEST LABS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=1 where libel like "%home assistant%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=43 where libel like "%BELKIN%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=43 where libel like "%BEST BUY%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=43 where libel like "%BESTBUY%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=43 where libel like "%NETATMO%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=43 where libel like "%CANAKIT.COM%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=43 where libel like "%WWW.GRYPHONCONNECT.COM%" and category_id=72'
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=4 where libel like "%WINE%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=6 where libel like "%BARNES & NOBLE%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=6 where libel like "%BOOK%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=6 where libel like "Kindle Svcs%" and category_id=72'
+
+# Sport (outdoor)
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=55 where libel like "%KAYAK%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=55 where libel like "%WEST MARINE%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=41 where libel like "%BLUEFIN TRADING%" and category_id=72'
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=56 where libel like "%PARKING%" and category_id=72'
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=3 where libel like "%wire fee%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=3 where libel like "%DDA Increase Int Paid%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=118 where libel like "%INTEREST PAYMENT%" and category_id=72'
+
+# Investment gain
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=118 where libel like "%dividend%" and category_id=72'
+
+# Internal Transfer
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=119 where libel like "%MOBILE PAYMENT%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=119 where libel like "%BILL PAYMT%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=119 where libel like "%deposit%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=119 where libel like "%TRANSFER%" and category_id=72'
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=119 where libel like "%THANK YOU FOR YOUR PMT%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=119 where libel like "PAYMENT RECEIVED -- THANK YOU%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=118 where libel like "Rewards Cash Back Credit%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=1 where libel like "%Requested transfer to Credit Card account%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=3 where libel like "%Maintenance Fee%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=3 where libel like "%EXCHANGE FEE%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=3 where libel like "CASH ADVANCE FEE%" and category_id=72'
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=83 where libel like "%VEHICLETAGREN%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=83 where libel like "VEHICLE TAG%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=83 where libel like "%FL LICENSE/TAG/ASMT%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=1 where libel like "%NABU CASA %" and abs(amount+5) <= 1e-6 and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=1 where libel like "%Google onX Offroad%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=1 where libel like "%Google One%" and abs(amount+1.99) <= 1e-6 and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=1 where libel like "%HOME ASSISTANT%" and abs(amount+6.5) <= 1e-6 and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=1 where libel like "%NEST%" and abs(amount+50) <= 1e-6 and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=50 where libel like "%AMC %" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=50 where libel like "%FANDANGO%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=50 where libel like "%THEATRES%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=50 where libel like "%APPLE.COM/BILL%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=50 where libel like "%Prime Video%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=1 where libel like "%Google%Storage%" and category_id=72'
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=52 where libel like "%YouTube Music%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=93 where libel like "%Spotify USA%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=52 where libel like "%GOOGLE MUSIC%" and category_id=72'
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=22 where libel like "%Etsy.com%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=22 where libel like "%MICHAEL%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=22 where libel like "%CASPER%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=22 where libel like "%IKEA%" and category_id=72'
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=40 where libel like "%FLOOR AND DECOR%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=40 where libel like "%THE HOME DEPOT%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=40 where libel like "%HOMEDEPOT%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=40 where libel like "%LOWES%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=40 where libel like "%MCMASTER-CARR%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=40 where libel like "%ACE%HDWE%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=40 where libel like "%ACE HARDWARE%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=40 where libel like "%PRODUCERS HDWE CO%" and category_id=72'
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=29 where libel like "%GIFT SHOP%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=29 where libel like "%JEWELERS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=29 where libel like "%lego%" and category_id=72'
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=19 where libel like "%MEDICAL%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=19 where libel like "%MEDICAL CARE%" and category_id=72'
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=23 where libel like "%EYE%" and category_id=72'
+
+#Park
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=57 where libel like "%PARKS&WILDLIFE%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=57 where libel like "%FEVER USA%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=57 where libel like "%ANDRETTIS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=57 where libel like "%TOPGOLF%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=57 where libel like "%TOP GOLF%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=57 where libel like "%KENNEDY SPACE CENTER%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=57 where libel like "%ZOO%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=57 where libel like "%UNIVERSAL %" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=57 where libel like "%LOS ALAMOS HISTORY%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=57 where libel like "%ROCKY MOUNTAIN%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=57 where libel like "%WATKINS Glen%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=57 where libel like "% BANDELIER%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=57 where libel like "%USGS.GOV STORE%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=57 where libel like "%GW CAVERNS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=57 where libel like "%GARDEN OF THE GODS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=57 where libel like "%MONARCH MOUNTAIN%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=57 where libel like "%TYROLIANA PARC%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=57 where libel like "%TICKET%" and category_id=72'
+
+# Clothing
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=13 where libel like "%TALBOTS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=13 where libel like "%CUSTOMINK GROUPS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=13 where libel like "%TEAM IP%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=13 where libel like "%ConverseUS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=13 where libel like "%CANVA* I04034-59989873%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=13 where libel like "%MARSHALLS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=13 where libel like "%BEACH BAZAAR%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=13 where libel like "%KOHL%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=13 where libel like "%SHOE %" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=13 where libel like "%Macys%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=13 where libel like "%JCPENNEY%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=13 where libel like "%RON JON %" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=33 where libel like "%SmartStyle%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=33 where libel like "%hair %" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=33 where libel like "%SPORT CLIPS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=33 where libel like "%NAILS & SPA%" and category_id=72'
+
+#PET
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=74 where libel like "%ANIMAL %" and category_id=72'
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=48 where libel like "%USPS PO%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=48 where libel like "%office depot%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=48 where libel like "%THE UPS STORE%" and category_id=72'
+
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=27 where libel like "%google%Play%" and category_id=72'
+
+#bike
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=94 where libel like "%CYCLERY%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=5 where libel like "%bike%" and category_id=72'
+
+#Travel
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=70 where libel like "%TRAIN%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=70 where libel like "%RAILROAD%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=70 where libel like "%rent%car%" and category_id=72'
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=94 where libel like "%INFLIGHT %" and category_id=72'
+
+#Health
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=18 where libel like "%dental%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=18 where libel like "%PEDIATRICS%" and category_id=72'
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=35 where libel like "%patients%" and category_id=72'
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=12 where libel like "%WALGREENS%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=12 where libel like "%CVS/PHARMACY%" and category_id=72'
+
+
+# Museum => Visits
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=75 where libel like "%aquarium%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=75 where libel like "%museum%" and category_id=72'
+
+
+# Deco
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=17 where libel like "%HOBBY-LOBBY%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=17 where libel like "%SHUTTERFLY%" and category_id=72'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=17 where libel like "%EASYCANVASPRINTS.COM%" and category_id=72'
+# Funiture
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=26 where libel like "%WAYFAIR%" and category_id=72'
+
+# Amazon
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=88 where category_id=72 and libel like "%amazon%" or libel like "AMZ%"'
+
+# Cash
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=102 where category_id=72 and libel like "%ATM WITHDRAWA%"'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=102 where category_id=72 and libel like "%ZEL %"'
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=102 where category_id=72 and libel like "Check Paid%" and (amount = -1000 or amount = -500 or amount = -350)' # Check for Loic
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=102 where category_id=72 and libel like "% CASH APP%"'
+
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'update transactions set category_id=1  where libel like "%Amazon Prime%" and amount < - 100 order by operation'
+
+
+echo "Unclassify Operations:"
+mysql $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'select * from transactions where category_id=72 and libel not like "%amazon%" and libel not like "AMZ%"'
+nohup sh -c 'sleep 3600 && $ACTBASE/bin/act-summarization' >&$ACTBASE/log/lastSummarization.log &
+echo "$(date) INFO In one hour, the summarization will start in the background. Log can be found there: $ACTBASE/log/lastSummarization.log" | tee -a $ACTBASE/log/act.log

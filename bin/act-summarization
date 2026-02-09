@@ -1,0 +1,85 @@
+#!/bin/bash
+
+. $ACTBASE/bin/act_utils.sh
+
+# Comput the sum() per year for all the groups/categories and per month per group.
+# $1 = [Nb years to look back (Default = 2 )
+# $2 = [Group ID (0 = Null)]  (Default: None => Compute all groupd Id).
+
+nbYears="$1"
+if [ -z "$nbYears" ];then
+    nbYears=2
+fi
+
+echo "$(date) INFO $0 Starting with $* ($nbYears)" | tee -a $ACTBASE/log/act-summarize.log
+
+
+if [ -z "$2" ];then
+    for category_id in $(mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -snBe "select id from categories"); do
+      echo "$(date) INFO $0: running: $0 $nbYears $category_id" | tee -a $ACTBASE/log/act-summarize.log
+      $0 $nbYears $category_id
+    done 
+    echo "$(date) INFO $0 Summarization is done with $(mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -snBe "select count(*) from category_monthly_totals") row in the summarization table" | tee -a $ACTBASE/log/act-summarize.log
+    exit 0
+fi
+
+if [ "a$2" == "a0" ];then
+  # Overall expense, regardless of the category (spending only => excluding transfert, saving and income)
+  # Per year: 
+  if [ $(isTableExist "category_yearly_totals") -eq 0 ]; then
+      createSumTables
+  fi
+
+  for back in $(seq 0 $nbYears); do
+    end="$(date -d "$(date -d "$(date +%m) - $back year" +%Y-01-01) + 1 year - 1 day" +%Y-%m-%d) 23:59:59"
+    start="$(date -d "$(date +%m) - $back year" +%Y-01-01) 00:00:00"
+    echo "$(date) INFO $0: mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p******* -e \"replace into category_yearly_totals (select \"$2\", \"${end%%-*}\", COALESCE(SUM(amount), 0), count(*), \"$(date +"%Y-%m-%d %H:%M:%S")\" from transactions where operation > \"$start\" and operation < \"$end\" and category_id not in (select id from categories where parent_id in (119,108,116) or id in (119,108,116)))\"" | tee -a $ACTBASE/log/act-summarize.log
+    mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e "replace into category_yearly_totals (select \"$2\", \"${end%%-*}\", COALESCE(SUM(amount), 0), count(*), \"$(date +"%Y-%m-%d %H:%M:%S")\" from transactions where operation > \"$start\" and operation < \"$end\" and category_id not in (select id from categories where parent_id in (119,108,116) or id in (119,108,116)))" | tee -a $ACTBASE/log/act-summarize.log
+  done
+
+  # Per month: 
+  if [ $(isTableExist "category_monthly_totals") -eq 0 ]; then
+      createSumTables
+  fi
+
+  for back in $(seq 1 $(( $nbYears * 12 ))); do
+    end="$(date -d "$(date -d "$(date +%m) - $back month" +%Y-%m-01) + 1 month - 1 day" +%Y-%m-%d) 23:59:59"
+    start="$(date -d "$(date +%m) - $back month" +%Y-%m-01) 00:00:00"
+    echo "$(date) INFO S0: mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p***** -e \"replace into category_monthly_totals (select \"$2\", \"$end\", COALESCE(SUM(amount), 0), count(*), \"$(date +"%Y-%m-%d %H:%M:%S")\" from transactions where operation > \"$start\" and operation < \"$end\" and category_id not in (select id from categories where parent_id in (119,108,116) or id in (119,108,116)))\"" | tee -a $ACTBASE/log/act-summarize.log
+     mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e "replace into category_monthly_totals (select \"$2\", \"$end\", COALESCE(SUM(amount), 0), count(*), \"$(date +"%Y-%m-%d %H:%M:%S")\" from transactions where operation > \"$start\" and operation < \"$end\" and category_id not in (select id from categories where parent_id in (119,108,116) or id in (119,108,116)))"
+   done
+else
+  # Summarization for the category $2 and its sub categories
+  # Per year
+  if [ $(isTableExist "category_yearly_totals") -eq 0 ]; then
+      createSumTables
+  fi
+
+  for back in $(seq 0 $nbYears); do
+    end="$(date -d "$(date -d "$(date +%m) - $back year" +%Y-01-01) + 1 year - 1 day" +%Y-%m-%d) 23:59:59"
+    start="$(date -d "$(date +%m) - $back year" +%Y-01-01) 00:00:00"
+    echo "$(date) INFO $0: mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p**** -e \"replace into category_yearly_totals(select \"$2\", \"${end%%-*}\", COALESCE(SUM(amount), 0), count(*), \"$(date +"%Y-%m-%d %H:%M:%S")\" from transactions where operation > \"$start\" and operation < \"$end\" and category_id in (select $2 union select id from categories where parent_id=$2 union select id from categories where parent_id in (select id from categories where parent_id=$2) union select id from categories where parent_id in (select id from categories where parent_id in (select id from categories where parent_id=$2))))\"" | tee -a $ACTBASE/log/act-summarize.log
+    mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e "replace into category_yearly_totals (select \"$2\", \"${end%%-*}\", COALESCE(SUM(amount), 0), count(*), \"$(date +"%Y-%m-%d %H:%M:%S")\" from transactions where operation > \"$start\" and operation < \"$end\" and category_id in (select $2 union select id from categories where parent_id=$2 union select id from categories where parent_id in (select id from categories where parent_id=$2) union select id from categories where parent_id in (select id from categories where parent_id in (select id from categories where parent_id=$2))))"
+  done
+
+  # Per Month
+  if [ $(isTableExist "category_monthly_totals") -eq 0 ]; then
+      createSumTables
+  fi
+
+  for back in $(seq 1 $(( $nbYears * 12 ))); do
+    end="$(date -d "$(date -d "$(date +%m) - $back month" +%Y-%m-01) + 1 month - 1 day" +%Y-%m-%d) 23:59:59"
+    start="$(date -d "$(date +%m) - $back month" +%Y-%m-01) 00:00:00"
+    echo "$(date) INFO $0: mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p***** -e \"replace into category_monthly_totals (select \"$2\",\"$end\", COALESCE(SUM(amount), 0), count(*), \"$(date +"%Y-%m-%d %H:%M:%S")\" from transactions where operation > \"$start\" and operation < \"$end\" and category_id in (select $2 union select id from categories where parent_id=$2 union select id from categories where parent_id in (select id from categories where parent_id=$2) union select id from categories where parent_id in (select id from categories where parent_id in (select id from categories where parent_id=$2))))\"" | tee -a $ACTBASE/log/act-summarize.log
+    mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e "replace into category_monthly_totals (select \"$2\",\"$end\", COALESCE(SUM(amount), 0), count(*), \"$(date +"%Y-%m-%d %H:%M:%S")\" from transactions where operation > \"$start\" and operation < \"$end\" and category_id in (select $2 union select id from categories where parent_id=$2 union select id from categories where parent_id in (select id from categories where parent_id=$2) union select id from categories where parent_id in (select id from categories where parent_id in (select id from categories where parent_id=$2))))"
+  done
+
+  # For investment account, foward-fill any missing months with the last available data
+  if [ $(mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -sbNe  "select id from categories where id = 108 or parent_id = 108" | egrep -c "$2\$") -eq 1 ]; then 
+
+     echo "$(date) INFO $0: mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e  \"UPDATE category_monthly_totals AS t JOIN ( SELECT t1.category_id, t1.month_end, COALESCE( NULLIF(t1.total_amount, 0), ( SELECT t2.total_amount FROM category_monthly_totals t2 WHERE t2.category_id = t1.category_id AND t2.month_end < t1.month_end AND t2.total_amount <> 0 ORDER BY t2.month_end DESC LIMIT 1)) AS filled_total FROM category_monthly_totals t1) AS f ON t.category_id = f.category_id AND t.category_id = \"$2\" AND t.month_end = f.month_end SET t.total_amount = f.filled_total WHERE t.total_amount = 0 AND f.filled_total IS NOT NULL\"" | tee -a $ACTBASE/log/act-summarize.log
+     mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e  "UPDATE category_monthly_totals AS t JOIN ( SELECT t1.category_id, t1.month_end, COALESCE( NULLIF(t1.total_amount, 0), ( SELECT t2.total_amount FROM category_monthly_totals t2 WHERE t2.category_id = t1.category_id AND t2.month_end < t1.month_end AND t2.total_amount <> 0 ORDER BY t2.month_end DESC LIMIT 1)) AS filled_total FROM category_monthly_totals t1) AS f ON t.category_id = f.category_id AND t.category_id = \"$2\" AND t.month_end = f.month_end SET t.total_amount = f.filled_total WHERE t.total_amount = 0 AND f.filled_total IS NOT NULL";
+  fi
+
+fi
+

@@ -1,0 +1,8 @@
+bin/loic.sh
+env/secret.env
+data/**
+log/**
+trash/
+!**/.gitignore
+!**/.gitkeep
+!*/*/

@@ -1,0 +1,110 @@
+#!/bin/bash
+
+. $ACTBASE/bin/act_utils.sh
+
+
+if [ $(isTableExist categories) -eq 0 ];then
+   echo "$(date) WARN $0: The accounts table is missing. Creating it..." | tee -a $ACTBASE/log/act.log
+   echo "$(date) INFO $0: mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p***** -e \"create table categories ( id int AUTO_INCREMENT PRIMARY KEY, name varchar(250), parent_id int)\"" | tee -a $ACTBASE/log/act.log 
+   mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e "create table categories ( id int AUTO_INCREMENT PRIMARY KEY, name varchar(250), parent_id int)"
+   mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e "INSERT INTO categories VALUES (1,'Subscriptions',96),(2,'Bank',NULL),(3,'Bank charges',2),(4,'Bar',79),(5,'Bike',66),(6,'Books',80),(8,'Canteen',79),(9,'Car',NULL),(10,'Cars payment',9),(11,'Charges',2),(12,'Chemist',78),(13,'Clothing',95),(14,'Concerts',80),(15,'Credit card',2),(17,'Decoration',36),(18,'Dentist',78),(19,'Doctor',78),(20,'Don',48),(21,'Electricity',96),(22,'Equipment',36),(23,'Eyecare',78),(24,'Fencing',66),(25,'Fuel',9),(26,'Furnitures',36),(27,'Games',80),(28,'Garden',36),(29,'Gifts',48),(31,'Grocery',79),(33,'Hairdresser',95),(34,'Heating',36),(35,'Hospital',78),(36,'House',NULL),(37,'House keeper',36),(38,'Housing',36),(39,'Imbalance-USD',2),(40,'Improvement',36),(41,'Indoor',66),(42,'Instrument rental',67),(43,'IT',80),(44,'Land',83),(45,'Magazine',80),(46,'Maintenance',9),(47,'Material',36),(48,'Miscellaneous',NULL),(50,'Movies',80),(52,'Music',80),(53,'Night club',80),(55,'Outdoor',66),(56,'Parking',9),(57,'Parks',80),(58,'Peage',9),(59,'Phone',96),(60,'Pool',36),(61,'Repairs',36),(62,'Restaurant',79),(63,'Soccer',66),(64,'Spa',66),(66,'Sports',80),(67,'Studies',95),(68,'Supermarket',79),(69,'Coffee',79),(70,'Travels',80),(71,'TV',96),(72,'Unspecified',48),(73,'Various supplies',36),(74,'Veterinary surgeon',81),(75,'Visits',80),(76,'Water',96),(78,'Health',NULL),(79,'Food',NULL),(80,'Leisure',NULL),(81,'Pet',80),(83,'Tax',NULL),(85,'CarInsurance',9),(86,'Analysis',78),(87,'Insurance',36),(90,'AppartmentRent',36),(91,'Hotel',70),(92,'Toll',9),(94,'PlanTicket',70),(95,'PersonalCare',NULL),(96,'Utilities',NULL),(98,'Tag',9),(101,'OtherPC',95),(102,'Cash',NULL),(103,'Job',95),(104,'Retirement',NULL)"
+fi
+
+add-category(){
+# $1 = Category name
+# $2 = [ parent id or name] (Default = Top/tree root)
+ echo "$(date) INFO $0: add-category called with $*" | tee -a $ACTBASE/log/act.log
+ parent=$(mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -bsNe "select id from categories where name = \"$2\"")
+ if [ -z "$parent" ];then
+  parent=$2
+  if [ -z "$2" ];then
+   parent=NULL
+  fi  
+ fi
+
+ echo "$(date) INFO $0: add-category() executing: mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -pxxxxx -e \"insert into Categories values (0,\"$1\",$parent)\"" | tee -a $ACTBASE/log/act.log
+ mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e "insert into categories values (0,\"$1\",$parent)"
+
+ echo -n "$(date) INFO $0: add-category() exiting. New category: (0, \"$1\", $parent)" | tee -a $ACTBASE/log/act.log
+ mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e "select * from categories where name = \"$1\""  | tee -a $ACTBASE/log/act.log
+}
+
+get-category(){
+  #$1 = Caterory id or name
+  #$2 = [strict] (default loose (%))
+  #$3 = [Field selector] (default *) ex:id  or id,parent_id
+  echo "$(date) INFO $0: get-category() called with $*" >>$ACTBASE/log/act.log
+
+  p='%'
+  if [ -n "$2" ];then
+   p=''
+  fi
+ 
+  f='*'
+  if [ -n "$3" ];then
+   f="$3"
+  fi
+  
+  category_id=$(mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -bsNe "select $f from categories where name like \"$p$1$p\"" | tr '\n' '|' | sed -e 's/|$//g')
+  if [ -z "$category_id" ]; then
+    category_id=$(mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -bsNe "select $f from categories where id = $1" | tr '\n' '|' | sed -e 's/|$//g')
+    if [ -z "$category_id" ]; then
+       echo -n "$(date) WARN $0: get-category exiting. No category found." >>$ACTBASE/log/act.log
+       return
+    fi
+  fi
+
+ echo $category_id |tr '|' '\n'
+ echo -n "$(date) INFO $0: get-category exiting ($category_id)" >>$ACTBASE/log/act.log
+}
+
+update-category(){
+  # $1 = id
+  # $2 = [name] Default = Existing name
+  # $3 = [parent id] Default = Existing parent id
+
+  if [ -z "$1" -o "$1" == "%" ];then
+      echo "Usage: $0 id [name] [parent id]"
+      echo "Example: $0 3 \"\" 2 => Update the 'Bank charges' to have 'Bank' as parent catgory"
+      echo "Example: $0 3 \"Bank charge\"  => Update the 'Bank charges' name"
+      exit 3
+  fi
+  echo "$(date) INFO $0: update-category() called with $*" >>$ACTBASE/log/act.log
+  
+  name="$2"
+  parent_id="$3"
+
+  if [ -z "$name" -o -z "$parent_id" ];then
+      res=$(get-category $1 strict)
+      if [ -z "$name" ];then
+          name=$(echo $res| cut -d' ' -f2)
+      fi
+      if [ -z "$parent_id" ]; then
+          parent_id=${res##* }
+      fi
+   fi
+   if [ -n "$name" -a -n "$parent_id" ];then
+       echo "$(date) INFO $0: update-category() executing: mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -pxxxx -e \"update categories set name=\"$name\", parent_id=$parent_id where id = $1\"" | tee -a $ACTBASE/log/act.log
+       mysql $MYSQL_DATABASE -h $MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e "update categories set name=\"$name\", parent_id=$parent_id where id = $1" 2>&1 | tee -a $ACTBASE/log/act.log
+   else
+       echo "$(date) WARN $0: No category found for id $1 ($res)" | tee -a $ACTBASE/log/act.log
+   fi
+}
+
+# Main entry
+if [ "$1" != "include" ]; then
+ action=$(basename $0 |sed -e 's/^act-\(.\)/\l\1/g')
+ category="$1"
+ if [ -z "$1" ];then
+   category="%"
+ fi
+
+ if [ -f "$1" ]; then
+   for h in `cut -f1 $1 | cut -d' ' -f1`; do
+       ${action%%.sh*} $h "$2" "$3"
+   done
+ else
+    ${action%%.sh*} $category "$2" "$3"
+ fi
+fi
+

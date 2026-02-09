@@ -1,0 +1,12 @@
+#!/bin/bash
+
+mysqldump -h $MYSQL_HOST --databases $MYSQL_DATABASE -u$MYSQL_USER -p$MYSQL_PASSWORD >$ACTDATA/backup/before.$(date +%Y-%m-%d).bak
+echo "$(date) INFO $0: Backup done in $ACTDATA/backup/before.$(date +%Y-%m-%d).bak" | tee -a $ACTBASE/log/act.log
+
+if [ -n "$ACTEXTRACVS" ]; then
+	rsync -avrz $ACTBASE/data/backup $ACTEXTRACVS:
+    	echo "$(date) INFO $0: Backup files are available in $ACTBASE/data/backup and $ACTEXTRACVS "| tee -a $ACTBASE/log/act.log
+else
+	echo "$(date) WARN $0: No external backup. Setup ACTEXTRACVS environment variable and rsync." | tee -a $ACTBASE/log/act.log
+fi
+
